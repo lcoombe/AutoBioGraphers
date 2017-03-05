@@ -1,0 +1,311 @@
+graphmatch -q=query -i=input -c=corr -g=1 -l=1 -p=0.2 -v=7.0 -n=10 -o=result 
+
+Result01: score=1511.95  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       GNB:17543358 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17543358
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- PIR:T15820 -- GNB:17543358
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        GNB:17543358 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result02: score=1511.10  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       GNB:17552208 
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       GNB:17543358 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- GNB:17552208
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Mkk1p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Ste7p        GNB:17552208 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17543358
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- PIR:T15820 -- GNB:17543358
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        GNB:17543358 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result03: score=1508.84  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       vab-3      
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result04: score=1508.33  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       PIR:T20599 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17539462 -- PIR:T20599
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- nhr-111 -- PIR:T20599
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        PIR:T20599 -- GNB:17539462 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result05: score=1508.00  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       GNB:17552208 
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       vab-3      
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- GNB:17552208
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Mkk1p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Ste7p        GNB:17552208 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result06: score=1507.75  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       GNB:17543358 
+	 Dig1p       GNB:17543358 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- GNB:17543358
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17543358
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        GNB:17543358
+	 Dig2p      -- Kss1p        GNB:17543358 -- mpk-1
+	 Dig1p      -- Kss1p        GNB:17543358 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result07: score=1507.75  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       eat-1      
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- W05H7.4 -- eat-1
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- GNB:33621030 -- eat-1
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        eat-1 -- W05H7.4 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result08: score=1507.49  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       GNB:17552208 
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       PIR:T20599 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- GNB:17552208
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Mkk1p        GNB:17552208 -- nhr-6 -- sek-1
+	 Spa2p      -- Ste7p        GNB:17552208 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17539462 -- PIR:T20599
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- nhr-111 -- PIR:T20599
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        PIR:T20599 -- GNB:17539462 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result09: score=1507.35  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       PIR:T18916 
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       GNB:17543358 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- PIR:T18916
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        PIR:T18916 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        PIR:T18916 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        PIR:T18916 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- GNB:17543358
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- PIR:T15820 -- GNB:17543358
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        GNB:17543358 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+Result10: score=1506.95  
+matches:
+	 Hsc82p      daf-21     
+	 Ste11p      mig-15     
+	 Spa2p       zyg-1      
+	 Mkk2p       sek-1      
+	 Mkk1p       sek-1      
+	 Fus3p       mpk-1      
+	 Dig2p       vab-3      
+	 Dig1p       PIR:T18803 
+	 Kss1p       mpk-1      
+	 Ste7p       mig-15     
+	 Mpt5p       PIR:T15820 
+edges:
+	 Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+	 Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+	 Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+	 Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+	 Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+	 Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+	 Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+	 Fus3p      -- Dig1p        mpk-1 -- PIR:T25092 -- PIR:T18803
+	 Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+	 Dig2p      -- Dig1p        vab-3 -- PIR:T25092 -- PIR:T18803
+	 Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+	 Dig1p      -- Kss1p        PIR:T18803 -- PIR:T25092 -- mpk-1
+	 Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+	 Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820

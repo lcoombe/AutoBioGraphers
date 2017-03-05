@@ -1,0 +1,130 @@
+More information is available at http://faculty.cs.tamu.edu/shsze/graphmatch.
+
+INSTALLATION
+
+1. Type ./install to install graphmatch.
+
+2. Either move the executable file graphmatch to a directory on the search path
+   or add the current directory to the search path.
+
+INPUT
+
+The following files are needed:
+
+1. A file that specifies the query graph.  The line
+
+      v1 v2 v3 v4
+
+   defines edges (v1,v2), (v1,v3) and (v1,v4).  An undirected edge (v1,v2)
+   should be included twice, once in v1 ... v2 ... and once in v2 ... v1 ...
+
+   Example:
+
+      Hsc82p Bud6p Ste11p
+      Bud6p Hsc82p Ste11p
+      Ste11p Hsc82p Bud6p
+
+   More examples are in ProteinInteractionNetwork/query and
+   MetabolicNetwork/query.
+
+2. A file that specifies the input graph in which related graphs are sought.
+   The line
+
+      v1 v2 v3 v4
+
+   defines edges (v1,v2), (v1,v3) and (v1,v4).  An undirected edge (v1,v2)
+   should be included twice, once in v1 ... v2 ... and once in v2 ... v1 ...
+
+   Example:
+
+      ifc-2  dyb-1
+      mig-15 ttx-1 dpy-14
+      dyb-1  ifc-2
+      dyp-14 mig-15
+      ttx-1  mig-15
+
+   A few pre-computed graphs from DIP (http://dip.doe-mbi.ucla.edu) and EcoCyc
+   (http://ecocyc.org) representing are in ProteinInteractionNetwork/input
+   and MetabolicNetwork/input.
+
+3. A file specifying correspondences between vertices in the query graph and
+   the input graph.  Each correspondence is specified as
+
+      v1 v2 corr
+
+   where v1 is a vertex in the query graph, v2 is a vertex in the input graph
+   and corr is the similarity score.
+
+   Example:
+
+      Hsc82p ifc-2  3e-04
+      Bud6p  ttx-1  2e-03
+
+   More examples are in ProteinInteractionNetwork/corr and
+   MetabolicNetwork/corr.
+
+USAGE
+
+   graphmatch -q=query -i=input -c=corr -g=1 -l=1 -p=0.2 -v=7.0 -n=10 -o=result
+
+Command line parameters:
+
+   -q= "file name containing query graph"
+   -i= "file name containing input graph"
+   -c= "file name containing correspondences between vertices"
+   -g= "maximum number of indels between two matches that are adjacent in the
+       query graph"
+   -l= "type of match score"
+       0 -- use similarity score as match score
+       1 -- use negative logarithm of similarity score as match score
+   -p= "indel penalty"
+   -v= "non-associated vertex penalty"
+   -n= "number of output graphs"
+   -o= "output file name"
+
+The running time of graphmatch is sensitive to parameter settings.
+
+OUTPUT
+
+Each result is shown as a graph alignment in which each pair of matching
+vertices is shown on a line.  For each adjacent match, corresponding edges
+are also shown on a line, with an edge that is in the query graph on the
+left and a path that is in the input graph on the right which can include
+indels between the matching vertices.  It is possible that some results are
+repeated since a graph alignment may be represented more than once.
+
+Example:
+
+Result01: score=1511.95
+matches:
+         Hsc82p      daf-21
+         Ste11p      mig-15
+         Spa2p       zyg-1
+         Mkk2p       sek-1
+         Mkk1p       sek-1
+         Fus3p       mpk-1
+         Dig2p       vab-3
+         Dig1p       GNB:17543358
+         Kss1p       mpk-1
+         Ste7p       mig-15
+         Mpt5p       PIR:T15820
+edges:
+         Hsc82p     -- Ste11p       daf-21 -- uaf-1 -- mig-15
+         Ste11p     -- Spa2p        mig-15 -- pal-1 -- zyg-1
+         Ste11p     -- Fus3p        mig-15 -- csn-5 -- mpk-1
+         Ste11p     -- Kss1p        mig-15 -- csn-5 -- mpk-1
+         Spa2p      -- Mkk2p        zyg-1 -- pal-1 -- sek-1
+         Spa2p      -- Mkk1p        zyg-1 -- pal-1 -- sek-1
+         Spa2p      -- Ste7p        zyg-1 -- pal-1 -- mig-15
+         Fus3p      -- Dig2p        mpk-1 -- PIR:T25092 -- vab-3
+         Fus3p      -- Dig1p        mpk-1 -- GNB:17543358
+         Fus3p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+         Fus3p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+         Dig2p      -- Dig1p        vab-3 -- PIR:T15820 -- GNB:17543358
+         Dig2p      -- Kss1p        vab-3 -- PIR:T25092 -- mpk-1
+         Dig1p      -- Kss1p        GNB:17543358 -- mpk-1
+         Kss1p      -- Ste7p        mpk-1 -- csn-5 -- mig-15
+         Kss1p      -- Mpt5p        mpk-1 -- GNB:32566959 -- PIR:T15820
+
+More examples are in ProteinInteractionNetwork/result and
+MetabolicNetwork/result.

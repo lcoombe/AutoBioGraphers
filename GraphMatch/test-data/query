@@ -1,0 +1,14 @@
+Hsc82p Bud6p Ste11p 
+Bud6p Hsc82p Spa2p Ste11p 
+Spa2p Bud6p Mkk2p Ste11p Mkk1p Ste7p 
+Mkk2p Spa2p Sph1p 
+Ste11p Hsc82p Bud6p Spa2p Sph1p Fus3p Kss1p Ste5p 
+Sph1p Mkk2p Ste11p Mkk1p Ste7p 
+Mkk1p Spa2p Sph1p 
+Dig2p Fus3p Dig1p Kss1p 
+Fus3p Ste11p Dig2p Ste7p Dig1p Ste5p Mpt5p 
+Ste7p Spa2p Sph1p Fus3p Kss1p Ste5p 
+Dig1p Dig2p Fus3p Kss1p 
+Kss1p Ste11p Dig2p Ste7p Dig1p Ste5p Mpt5p 
+Ste5p Ste11p Fus3p Ste7p Kss1p 
+Mpt5p Fus3p Kss1p 
