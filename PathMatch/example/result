@@ -1,0 +1,143 @@
+pathmatch -q=query -i=input -c=corr -g=1 -l=1 -s=0 -p=23.0 -n=10 -o=result 
+
+Result01: score=820.48  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- ttx-1        
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result02: score=820.30  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- dpy-14       
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result03: score=819.38  
+ Ste18p       -- GNB:17543190 
+   -             akt-2        
+ Ste4p        -- GNB:32566158 
+   -             mig-15       
+ Gpa1p        -- hsp-1        
+ Ste11p       -- mig-15       
+ Ste5p        -- ttx-1        
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result04: score=819.20  
+ Ste18p       -- GNB:17543190 
+   -             akt-2        
+ Ste4p        -- GNB:32566158 
+   -             mig-15       
+ Gpa1p        -- hsp-1        
+ Ste11p       -- mig-15       
+ Ste5p        -- dpy-14       
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result05: score=814.78  
+ Ste18p       -- GNB:17543190 
+   -             akt-2        
+ Ste4p        -- GNB:32566158 
+ Gpa1p              -      
+ Ste11p       -- mig-15       
+ Ste5p        -- ttx-1        
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result06: score=814.63  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- ttx-1        
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- W05H7.4      
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result07: score=814.63  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- ttx-1        
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- PIR:T15425   
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result08: score=814.60  
+ Ste18p       -- GNB:17543190 
+   -             akt-2        
+ Ste4p        -- GNB:32566158 
+ Gpa1p              -      
+ Ste11p       -- mig-15       
+ Ste5p        -- dpy-14       
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- GNB:17543358 
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result09: score=814.44  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- dpy-14       
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- W05H7.4      
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
+
+Result10: score=814.44  
+ Ste18p       -- ifc-2        
+   -             dyb-1        
+ Ste4p        -- unc-15       
+ Gpa1p           PIR:T24472   
+ Ste11p       -- mig-15       
+ Ste5p        -- dpy-14       
+ Ste7p        -- mig-15       
+   -             csn-5        
+ Fus3p        -- mpk-1        
+ Dig1p        -- PIR:T15425   
+ Ste12p       -- gei-4        
+ Mat1ap       -- PIR:T23537   
