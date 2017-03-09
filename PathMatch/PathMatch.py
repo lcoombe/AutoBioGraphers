@@ -1,3 +1,4 @@
+# coding: utf-8
 #PathMatch code
 
 import argparse
@@ -53,7 +54,7 @@ def read_corr(corr_filename, Gp):
 def calculate_weights(Gp, G, path):
     # From the paper:
     # For each pair of vertices vij and vi+d,l satisfying 0  < d <= m + 1, compute the length of the shortest path d' from vij to vi+d,l in G, and construct a directed edge from vij to vi+d,l if d' <= m + 1. Add a directed edge from s to each vij and from each vij to t.
-    # Each edge (vij , vi+d,l ) represents that it is always possible to find a path from vij to vi+d,l in G so that there are a total of at most m mismatches or indels between the matches (pi,vij) and (pi+d,vi+d,l). To impose mismatch and indel penalties, if DELTA <= 0 represents both the mismatch and indel penalty, set the weight of each edge (vij , vi+d,l ) to (max(d, d' ) − 1)DELTA, the weight of each edge (s, vij ) to (i − 1)DELTA, and the weight of each edge (vij , t) to (n − i)DELTA. The above construction reduces the path matching problem to finding a path p' from s to t in G' with the maximum sum of vertex and edge weights.
+    # Each edge (vij , vi+d,l) represents that it is always possible to find a path from vij to vi+d,l in G so that there are a total of at most m mismatches or indels between the matches (pi,vij) and (pi+d,vi+d,l). To impose mismatch and indel penalties, if DELTA <= 0 represents both the mismatch and indel penalty, set the weight of each edge (vij , vi+d,l ) to (max(d, d' ) − 1)DELTA, the weight of each edge (s, vij ) to (i − 1)DELTA, and the weight of each edge (vij , t) to (n − i)DELTA. The above construction reduces the path matching problem to finding a path p' from s to t in G' with the maximum sum of vertex and edge weights.
 
     # Adding source and sink nodes with weight 0
     Gp.add_node("start", weight=0)
@@ -121,6 +122,7 @@ def find_k_highest_scoring_paths(Gp):
 # !!!TODO!!!
 # Find k shortest, lowest weighted paths from source="start" to sink="end". There are negative edge weights.
 def find_k_shortest_paths(Gpp):
+    return
 
     #print(nx.shortest_path(Gpp,source="start",target="end"))
     #print nx.negative_edge_cycle(Gpp, weight='weight')
