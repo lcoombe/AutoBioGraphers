@@ -40,20 +40,26 @@ print
 
 print "Is G connected?: %s" % nx.is_connected(G)
 print "Does G have an edge from nodes T and V? %s" % G.has_edge(T, V)
+print "Does G have an edge from nodes V to T? %s" % G.has_edge(V, T)
 print "Now adding edge from T and V"
 G.add_edge(T, V)
 print "Now, does G have an edge from nodes T and V? %s" % G.has_edge(T, V)
+print "Now, does G have an edge from nodes V to T? %s" % G.has_edge(V, T)
 
 print "Adding more edges..."
 G.add_edge(V, U)
 G.add_edge(V, Y)
 G.add_edge(Y, H)
+G.add_edge(Testing(3, 4), Testing(10, 19))
 
+print "Showing all nodes: "
+for l in G.node:
+	print l 
 
 print "Is G connected? %s" % nx.is_connected(G)
 
 L = nx.shortest_path(G, T, U)
-print "Length of shortest path: %d" % (len(L)-1) #Subtract 1 because both source and end node included in path
+print "Length of shortest path from T to U: %d" % (len(L)-1) #Subtract 1 because both source and end node included in path
 
 print "The nodes in the shortest path:"
 for l in L:

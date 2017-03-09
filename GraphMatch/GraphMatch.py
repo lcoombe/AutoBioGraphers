@@ -6,6 +6,9 @@ import re
 from Corr_Vertex import Corr_Vertex
 from Tree import Tree
 from networkx.drawing.nx_pydot import write_dot
+import copy
+
+#EXAMPLE USAGE: python GraphMatch.py test-data/query test-data/input test-data/corr_short
 
 #GLOBAL VARIABLES
 
@@ -13,7 +16,10 @@ from networkx.drawing.nx_pydot import write_dot
 non_assoc_vertex_penalty = -1.0
 indel_penalty = -0.1
 m = 1
+#Tree to keep track of already enumerated subgraphs
+T = Tree()
 
+#HELPER FUNCTIONS
 
 def readGraph(filename):
     G_Graph = nx.Graph()
@@ -61,17 +67,19 @@ def readCorrespondances(corrFileName):
 def makeGraph_prime(corr, G0, G):
     V_prime = []
     G_prime = nx.Graph()
+    #Taking V' --> union of all corresponding vertices
     for queryNode in corr:
         V_prime.extend(corr[queryNode])
+    #Building up the G' graph
     for i in range(0, len(V_prime)):
         vij = V_prime[i]
         for j in range(i+1, len(V_prime)):
             vkl = V_prime[j]
-            if vij.queryVertex != vkl.queryVertex:
-                has_g0_edge = G0.has_edge(vij.queryVertex, vkl.queryVertex)
+            if vij.queryVertex != vkl.queryVertex: #Only would consider adding edge to G' if they have different corresponding vertices
+                has_g0_edge = G0.has_edge(vij.queryVertex, vkl.queryVertex) #Is there a (vi, vk) edge in G0?
                 path_length_G = float("inf")
                 if nx.has_path(G, vij.name, vkl.name):
-                    short_path_G = nx.shortest_path(G, vij.name, vkl.name)
+                    short_path_G = nx.shortest_path(G, vij.name, vkl.name) #Path length from vij to vkl in G
                     path_length_G = len(short_path_G)-1
                 if has_g0_edge and path_length_G <= m+1:
                     G_prime.add_edge(vij, vkl)
@@ -99,8 +107,9 @@ def isValidSolution(V0_plus, W_prime):
 	# 		vij = corresponding vertex of vi in W'
 	# 		vkl = corresponding vertex of vk in W'
 	# 		(vij, vkl) must be an edge in E'
+    return False
 
-def GraphMatch(W, W_prime):
+def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
     print "GraphMatch DFS goes here"
 
 	# With the loop, we are doing this:
@@ -111,9 +120,25 @@ def GraphMatch(W, W_prime):
     #
 	# //W: Set of vertices in V0+ currently
 	# //W': Set of vertices corresponding to V0+ vertices
+
 	# 	for each vertex vi in V0, but not already in W:
+    for vi in corr:
+        W = copy.deepcopy(W_in)
+        if vi not in W:
+            W.append(vi) 	# V0+ = Union of W and vi (that set of vertices)
 	# 		If the induced subgraph by adding vi to W is connected, and not already found (in T):
-	# 			V0+ = Union of W and vi (that set of vertices)
+            subgraph = G0.subgraph(W)
+            if not T.hasPath(W) and nx.is_connected(subgraph):
+                for vij in corr[vi]:
+                    W_prime = copy.deepcopy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
+                    W_prime.append(vij)
+                    if isValidSolution(W, W_prime):
+                        score = ScoreAlignment(G0, G_prime)
+                        #TODO: Record the alignment and its score
+                        GraphMatch(W, W_prime, G_prime, G0)
+                T.addPath(W)
+
+
 	# 			for each vertex vij in the correspondance list of vi:
 	# 				Run subroutine 'isValidSolution(V0+, W' union vij)'
 	# 				if valid solution:
@@ -134,8 +159,14 @@ def main():
     G_refGraph = readGraph(args.i)
     G0_queryGraph = readGraph(args.q)
 
-    #corr = readCorrespondances(args.c)
+    corr = readCorrespondances(args.c)
+    for vi in corr:
+        print vi
 
+    Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph)
+
+
+    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph) #Apply Graph Match with empty sets at first
 
 if __name__ == '__main__':
     main()
