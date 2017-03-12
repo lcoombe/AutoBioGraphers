@@ -99,19 +99,30 @@ def ScoreAlignment(G0, G0_prime):
 # 		- Find the path length between vij and vkl in G0'
 # 		- Penalize the score by -(path length-1)*delta
 
+#Given a vertex vi, and a list of corresponding vertex, return the corresponding vertex of vi
+def getCorrespondingVertex(v, correspList):
+    for c in correspList:
+        if c.queryVertex == v:
+            return c
+    print "FAIL! in getCorrespondingVertex" #Shouldn't get here, as should have a corresponding vertex present
+
 #Determining if the vertex combos are a valid solution
-def isValidSolution(V0_plus, W_prime):
-    print "TODO: isValidSolution code"
+def isValidSolution(V0_plus, W_prime, G0, G_prime):
 	# For each pair of  vertices (vi, vk) in V0+:
+    for vi in V0_plus:
+        for vk in V0_plus:
+            if vi != vk and G0.has_edge(vi, vk):
+                vij = getCorrespondingVertex(vi, W_prime)
+                vkl = getCorrespondingVertex(vk, W_prime)
+                if not G_prime.has_edge(vij, vkl):
+                    return False
+    return True
 	# 	if (vi, vk) is an edge in E0:
 	# 		vij = corresponding vertex of vi in W'
 	# 		vkl = corresponding vertex of vk in W'
 	# 		(vij, vkl) must be an edge in E'
-    return False
 
 def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
-    print "GraphMatch DFS goes here"
-
 	# With the loop, we are doing this:
 	# Enumerate all connected induced subgraphs of G0
 	# (Induced means that we pick the vertices, and a pair of vertices are connected in the subgraph if they have an edge in G0)
@@ -132,10 +143,13 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
                 for vij in corr[vi]:
                     W_prime = copy.deepcopy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
                     W_prime.append(vij)
-                    if isValidSolution(W, W_prime):
+                    if isValidSolution(W, W_prime, G0, G_prime):
                         score = ScoreAlignment(G0, G_prime)
+                        print "Possible Solution: "
+                        print W
+                        print
                         #TODO: Record the alignment and its score
-                        GraphMatch(W, W_prime, G_prime, G0)
+                        GraphMatch(W, W_prime, corr, G_prime, G0)
                 T.addPath(W)
 
 
@@ -164,9 +178,14 @@ def main():
         print vi
 
     Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph)
-
+    print Gprime_graph.has_edge(corr['Spa2p'][0], corr['Mkk2p'][2])
 
     GraphMatch([], [], corr, Gprime_graph, G0_queryGraph) #Apply Graph Match with empty sets at first
+    T.printTree()
+
+    write_dot(G0_queryGraph, 'G0.dot')
+    write_dot(Gprime_graph, 'G_prime.dot')
+
 
 if __name__ == '__main__':
     main()

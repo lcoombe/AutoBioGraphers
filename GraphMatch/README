@@ -1,0 +1,6 @@
+Test usage:
+ python GraphMatch.py test-data/query test-data/input test-data/corr 
+
+**NOTE: I was getting weird errors based on the ":" in the protein names. I just changed them to "-", and I didn't seem to get the same errors
+
+TODO: Having issues with the G' structure not recognizing paths when the objects are different copies, even if their attributes are the same. Plan to change the construction of this graph so that instead of the correspVertex object being the node, have a string-ified version of the object stored, so hopefully will be easier to query the paths in the graph.
