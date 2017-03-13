@@ -9,3 +9,6 @@ class Corr_Vertex:
 
     def __str__(self):
         return self.name + ", " + str(self.score) + ", " + str(self.queryVertex)
+
+    def stringifyVertex(self):
+        return self.name + ", " + str(self.score) + ", " + str(self.queryVertex)
