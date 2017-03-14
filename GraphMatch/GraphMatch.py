@@ -7,7 +7,6 @@ from Corr_Vertex import Corr_Vertex
 from Tree import Tree
 from networkx.drawing.nx_pydot import write_dot
 import copy
-import cPickle
 
 #EXAMPLE USAGE: python GraphMatch.py test-data/query test-data/input test-data/corr_short
 
@@ -23,6 +22,7 @@ results = []
 
 #HELPER FUNCTIONS
 
+#Reading in input and query graphs
 def readGraph(filename):
     G_Graph = nx.Graph()
     refFile = open(filename, 'r')
@@ -40,14 +40,9 @@ def readGraph(filename):
     return G_Graph
 
 #     //Load in correspondances between vertices in G and G0
-# - for each V0, there is a set of correspondances, and a score
-# - Possible format: Dictionary, where key is the V0, and value is the correspondance (small class)
-#    * Perhaps create small class representing the 'corresponding vertex'
-#    * Fields in the class: name, score, vertex corresponds to
-#v1 v2 corr
-#where v1 is a vertex in the query graph, v2 is a vertex in the input graph
+#Format of input file: v1 v2 corr: where v1 is a vertex in the query graph, v2 is a vertex in the input graph
 def readCorrespondances(corrFileName):
-    corr = {}
+    corr = {} #Dictionary: key = query node name. Value = list of corresponding vertices
     corrFile = open(corrFileName, 'r')
     for line in corrFile:
         line = line.strip()
@@ -90,8 +85,7 @@ def makeGraph_prime(corr, G0, G):
     return G_prime
 
 
-#TODO: REQUIRED HELPER FUNCTIONS:
-
+#TODO: Implement Scoring
 #Scoring the alignment between two graphs G0 and G0'
 def ScoreAlignment(G0, G0_prime):
     #print "TODO: Score Alignment code"
@@ -122,64 +116,41 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
                 if not G_prime.has_edge(vij.stringifyVertex(), vkl.stringifyVertex()):
                     return False
     return True
-	# 	if (vi, vk) is an edge in E0:
-	# 		vij = corresponding vertex of vi in W'
-	# 		vkl = corresponding vertex of vk in W'
-	# 		(vij, vkl) must be an edge in E'
 
 
+#Main GraphMatch recurrence (Fig 3)
 def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, myTree):
-	# With the loop, we are doing this:
-	# Enumerate all connected induced subgraphs of G0
-	# (Induced means that we pick the vertices, and a pair of vertices are connected in the subgraph if they have an edge in G0)
-	# - Each enumeration is a way to get V0+ (The vertices in G0 that have an association in G0')
-	# - To avoid enumerating graphs multiple times, represent connected induced subgraph as a path in a tree where the vertices are in sorted order in the tree T, last vertex marked
-    #
-	# //W: Set of vertices in V0+ currently
-	# //W': Set of vertices corresponding to V0+ vertices
 
-	# 	for each vertex vi in V0, but not already in W:
-   # T = cPickle.loads(cPickle.dumps(myTree, -1))
     T = myTree
     for vi in corr:
-        W = copy.deepcopy(W_in)
+        W = copy.copy(W_in)
         if vi not in W:
             W.append(vi) 	# V0+ = Union of W and vi (that set of vertices)
 	# 		If the induced subgraph by adding vi to W is connected, and not already found (in T):
             subgraph = G0.subgraph(W)
-
             if nx.is_connected(subgraph) :
                 for vij in corr[vi]:
-                    vij_name = vij.name
-                    W_prime = copy.deepcopy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
+                    W_prime = copy.copy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
                     W_prime.append(vij)
                     W_prime_str = []
                     for v in W_prime:
-                        W_prime_str.append(v.name)
+                        W_prime_str.append(v.stringifyVertex())
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
-                        score = ScoreAlignment(G0, G_prime)
-                        # print W
-                        # print W_prime_str
-                        # print
-                        results.append((W, W_prime))
-                        #TODO: Record the alignment and its score
+                        score = ScoreAlignment(G0, G_prime) #TODO: Record the alignment and its score
+                        results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
                         GraphMatch(W, W_prime, corr, G_prime, G0, T)
-                W_prime_nodes = []
-                for n in W_prime:
-                    W_prime_nodes.append(n.name)
-                T.addPath(W_prime_nodes)
-                #print "######"
-                #T.printTree()
+                    T.addPath(W_prime_str)
 
+#NOTES:
+#I'm having trouble with keeping track of the V0+ vertices in the tree.
+#I think I'm seeing that if I add W to the path of T, then a lot of the combinations wanted aren't being generated
+#Ie. If have vi = H, and adding S. Say both H and s have corresponding vertices: H:[a, b] and S:[c, d]
+# Then get GraphMatch([H,S], [a,c], ..) call
+# Eventually, that will return and add [H, S] to the Tree.
+# Then, GraphMatch([H,S], [a,d], ..) might be called, but then it would appear to have that path in T already, and
+# wouldn't go forward even though this could be a valid solution
 
-				# for each vertex vij in the correspondance list of vi:
-				# 	Run subroutine 'isValidSolution(V0+, W' union vij)'
-				# 	if valid solution:
-				# 		Use ScoreAlignment subroutine to find the alignment score
-				# 		record the score (Perhaps keep top 5 or something?)
-				# 		GraphMatch(W union {vi}, W' union {vij})
-				# add the W union {Vi} subgraph to T
-
+#For now, just adding the W_prime paths, since we know we don't want to look at multiple of those collections of vertices multiple times.
 
 def main():
     # Reading in the arguments from the command line
@@ -194,23 +165,16 @@ def main():
 
     corr = readCorrespondances(args.c)
     Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph)
-    #print Gprime_graph.has_edge(corr['Spa2p'][0], corr['Mkk2p'][2])
 
-    tree = Tree()
     GraphMatch([], [], corr, Gprime_graph, G0_queryGraph, T) #Apply Graph Match with empty sets at first
-    T.printTree()
 
     write_dot(G0_queryGraph, 'G0.dot')
     write_dot(Gprime_graph, 'G_prime.dot')
 
-    # tree = T.__deepcopy__()
-    # print "##########################"
-    # tree.printTree()
-
+#TEMPORARY: PRINTING RESULTS (TODO: Keep track of top k alignments)
     for r in results:
         W = r[0]
         W_prime = r[1]
-
         for w in W:
             p = getCorrespondingVertex(w, W_prime)
             print w + "\t" + p.name

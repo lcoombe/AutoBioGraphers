@@ -1,5 +1,5 @@
 Test usage:
- python GraphMatch.py test-data/query test-data/input test-data/corr 
+python GraphMatch.py  MetabolicNetwork/query MetabolicNetwork/input MetabolicNetwork/corr
 
 **NOTE: I was getting weird errors based on the ":" in the protein names. I just changed them to "-", and I didn't seem to get the same errors
 

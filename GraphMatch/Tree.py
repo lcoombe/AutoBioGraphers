@@ -8,6 +8,7 @@
 # When adding to a graph, the nodes are sorted first. Then, the path is added, without adding duplicate nodes.
 # If a new path being added has all nodes already in the tree, then the node corresponding to the last in the path has a "*" appended
 
+
 class Tree:
 
     def __init__(self):
@@ -75,16 +76,3 @@ class Tree:
 
     def printTree(self):
         self.printString("", self.root, 0)
-
-
-
-
-
-
-
-
-
-# class Node:
-#     def __init__(self, name):
-#         self.name = name
-#         self.children = []
