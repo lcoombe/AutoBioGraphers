@@ -87,7 +87,9 @@ def makeGraph_prime(corr, G0, G):
 
 #TODO: Implement Scoring
 #Scoring the alignment between two graphs G0 and G0'
-def ScoreAlignment(G0, G0_prime):
+#Potentially return the G0' subgraph? (including the indel vertices)
+#Just alter parameters as needed -- I just put in placeholders
+def ScoreAlignment(W, W_prime, G, G0):
     #print "TODO: Score Alignment code"
     x = 1
 # - For each vertex in G0', find the vertex correspondance in V0 (if exists)
@@ -119,9 +121,7 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
 
 
 #Main GraphMatch recurrence (Fig 3)
-def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, myTree):
-
-    T = myTree
+def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
     for vi in corr:
         W = copy.copy(W_in)
         if vi not in W:
@@ -136,9 +136,9 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, myTree):
                     for v in W_prime:
                         W_prime_str.append(v.stringifyVertex())
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
-                        score = ScoreAlignment(G0, G_prime) #TODO: Record the alignment and its score
+                        #score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
                         results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
-                        GraphMatch(W, W_prime, corr, G_prime, G0, T)
+                        GraphMatch(W, W_prime, corr, G_prime, G0)
                     T.addPath(W_prime_str)
 
 #NOTES:
@@ -160,13 +160,13 @@ def main():
     parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
     args = parser.parse_args()
 
-    G_refGraph = readGraph(args.i)
-    G0_queryGraph = readGraph(args.q)
+    G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
+    G0_queryGraph = readGraph(args.q) #Node: String of query vertex name
 
-    corr = readCorrespondances(args.c)
-    Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph)
+    corr = readCorrespondances(args.c) #Dictionary: key=query vertex name; value=list of Corr_Vertex
+    Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph) #Node: Stringified Corr_vertex (See class function)
 
-    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph, T) #Apply Graph Match with empty sets at first
+    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph) #Apply Graph Match with empty sets at first
 
     write_dot(G0_queryGraph, 'G0.dot')
     write_dot(Gprime_graph, 'G_prime.dot')
