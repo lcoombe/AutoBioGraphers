@@ -7,12 +7,16 @@ import networkx as nx
 
 INDEL_PENALTY = -23
 MAX_NO_OF_MISMATCHES_AND_GAPS = 1
+CORR_E_VALUE_CUTOFF = float(1e200)
 
-def safe_log(x):
-    if x == 0:
-        return float("-inf")
+def safe_log(sim):
+    if sim < 0:
+        print "Negative sim score"
+        sys.exit(1)
+    elif sim <= 1e-299:
+        return math.log(1e-299)
     else:
-        return math.log(x)
+        return math.log(sim)
 
 # Read query path from file and load into list path
 def read_path(path_filename, path):
@@ -34,8 +38,8 @@ def read_network(network_filename, G):
                     G.add_edge(x, y)
 
 
-# Read correspondence information from file and construct graph G' nodes only
-def read_corr(corr_filename, Gp):
+# Read correspondence information from file and construct graph G' nodes only including v1 in query path p
+def read_corr(corr_filename, path, Gp):
     with open(corr_filename, 'r') as f:
         for line in f:
             # [v1 v2 corr] where v1 is a vertex in the query path, v2 is 
@@ -43,12 +47,17 @@ def read_corr(corr_filename, Gp):
             splits = line.rstrip().split()
             assert(len(splits)==3)
 
+            if splits[0] not in path:
+                continue
+
             # p = (pi, vij)
             p = (splits[0], splits[1])
             # -l= "type of match score"
             #       1 -- use negative logarithm of similarity score as match score
             w = -safe_log(float(splits[2]))
-            Gp.add_node(p, weight=w)
+            #w = float(splits[2])
+            if w <= CORR_E_VALUE_CUTOFF:
+                Gp.add_node(p, weight=w)
 
 # Calculate the edge weights of graph G'
 def calculate_weights(Gp, G, path):
@@ -81,17 +90,17 @@ def calculate_weights(Gp, G, path):
                     except Exception: # No path exists between source and target
                         dp = float("inf")
 
-                    if dp <= MAX_NO_OF_MISMATCHES_AND_GAPS+1:
+                    if 0 < dp <= MAX_NO_OF_MISMATCHES_AND_GAPS+1:
                         # Set edge weight to impose mismatch and indel penalties
                         w = (max(dp, d)-1)*INDEL_PENALTY
                         Gp.add_edge(x, y, weight=w)
 
         # Start
-        start_weight = (i-1)*INDEL_PENALTY
+        start_weight = (i)*INDEL_PENALTY
         Gp.add_edge("start", x, weight=start_weight)
 
         # End
-        end_weight = (len(path)-i)*INDEL_PENALTY # !! I think? n is length of path? 
+        end_weight = (len(path)-i-1)*INDEL_PENALTY # !! I think? n is length of path? 
         Gp.add_edge(x, "end",  weight=end_weight)
 
 def find_k_highest_scoring_paths(Gp):
@@ -109,7 +118,7 @@ def find_k_highest_scoring_paths(Gp):
     # Adding all edges from Gp to Gpp with weight -w(u) + -w(u, v), since all node+edge weights were negated
     node_weights = nx.get_node_attributes(Gp, 'weight')
     for n in Gp.nodes():
-        edges = Gp.out_edges(n, True) # Get all out edges for the node
+        edges = Gp.in_edges(n, True) # Get all out edges for the node
         negated_node_weight = -node_weights[n]
         for e in edges: # e = (node, neighbor, data)
             negated_edge_weight = -e[2]['weight']
@@ -117,39 +126,86 @@ def find_k_highest_scoring_paths(Gp):
             Gpp.add_edge(e[0], e[1], weight=w)
 
     ## TODO!!!
-    paths = find_k_shortest_paths(Gpp)
+    return find_k_shortest_paths(Gpp, 1)
+
+
 
 # !!!TODO!!!
 # Find k shortest, lowest weighted paths from source="start" to sink="end". There are negative edge weights.
-def find_k_shortest_paths(Gpp):
-    return
+def find_k_shortest_paths(Gpp, k):
 
     #print(nx.shortest_path(Gpp,source="start",target="end"))
     #print nx.negative_edge_cycle(Gpp, weight='weight')
-    #paths = nx.johnson(Gpp, 'weight')
-    #best = paths["start"]["end"]
 
-    #def _get_weight(p):
-    #    weight = 0
-    #    for i in range(len(p)-1):
-    #        #print best[i], best[i+1]
-    #        #print Gpp[best[i]][best[i+1]]
-    #        weight += Gpp[p[i]][p[i+1]]['weight']
-    #    print weight
+    def _get_weight(p):
+        weight = 0
+        for i in range(len(p)-1):
+            #print best[i], best[i+1]
+            #print Gpp[best[i]][best[i+1]]
+            weight += Gpp[p[i]][p[i+1]]['weight']
+        return weight
 
-    #print paths
-    #best = [(_get_weight(path), path) for path in nx.all_simple_paths(Gpp, "start", "end")]
-    #print sorted(best, key=lambda x: x[0])
+    paths = nx.johnson(Gpp, 'weight')
+    best = paths["start"]["end"]
+    print best
 
-    #print Gpp.out_edges(('Ste18p', 'ifc-2'), data=True)
-    #print Gpp.out_edges(('Ste4p', 'unc-15'), data=True)
-    #print Gpp.out_edges(('Ste11p', 'mig-15'), data=True)
-    #print Gpp.out_edges(('Ste5p', 'ttx-1'), data=True)
-    #print Gpp.out_edges(('Ste7p', 'mig-15'), data=True)
-    #print Gpp.out_edges(('Fus3p', 'mpk-1'), data=True)
-    #print Gpp.out_edges(('Dig1p', 'GNB:17543358'), data=True)
-    #print Gpp.out_edges(('Ste12p', 'gei-4'), data=True)
-    #print Gpp.out_edges(('Mat1ap', 'PIR:T23537'), data=True)
+    #dist = nx.floyd_warshall(Gpp, weight='weight')
+    #keys = dist.keys()
+    #print dist["start"]["end"]
+
+    score = _get_weight(best)
+    print score
+    return [(best, score)]
+
+def format_result(path, G, results, outfile):
+    print results
+    for index, item in enumerate(results):
+        result, score = item
+        print "HERE"
+        col1, col2, col3 = [], [], []
+        result_q = [x[0] for x in result[1:-1]]
+        for q in path:
+            col1.append(q)
+            if q not in result_q:
+                col2.append("")
+                col3.append("-")
+            else:
+                col2.append("--")
+                entry = result[result_q.index(q)+1]
+                print q, entry[0]
+                assert(q == entry[0])
+                col3.append(entry[1])
+
+                next_entry = result[result_q.index(q)+2]
+                if next_entry != 'end':
+                    # Find the shortest path d' in G from vi,j to vi+d,l
+                    shortest_path = nx.shortest_path(G, entry[1], next_entry[1])
+                    for a in shortest_path[1:-1]:
+                        col1.append("-")
+                        col2.append("")
+                        col3.append(a)
+        print col1, col2, col3
+        assert(len(col1)+len(col2)+len(col3) == len(col1)*3)
+
+        with open(outfile, 'a') as f:
+            f.write("Result " + str(index) + ": score=" + str(score) + "\n")
+            rows = [[col1[i], col2[i], col3[i]] for i in range(len(col1))]
+            print rows
+
+            widths = [max(map(len, col)) for col in zip(*rows)]
+            for row in rows:
+                print "  ".join((val.ljust(width) for val, width in zip(row, widths)))
+                line = "  ".join((val.ljust(width) for val, width in zip(row, widths)))
+                f.write(line+"\n")
+
+            #for i in range(len(col1)):
+                #f.write(col1[i] + "\t" + col2[i] + "\t" + col3[i] + "\n")
+
+            f.write("\n\n")
+    
+
+
+
 
 
 # Parse input arguments
@@ -174,13 +230,15 @@ def main():
 
     # Read and create graph G' from correspondence file
     Gp = nx.DiGraph() # directed graph
-    read_corr(args.c, Gp)
+    read_corr(args.c, path, Gp)
 
     # Calculate the edge weights in G'
     calculate_weights(Gp, G, path)
 
     # Find k highest scoring paths in G
-    find_k_highest_scoring_paths(Gp)
+    results = find_k_highest_scoring_paths(Gp)
+
+    format_result(path, G, results, "test")
 
 if __name__ == "__main__":
     main()
