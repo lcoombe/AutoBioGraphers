@@ -7,6 +7,7 @@ import networkx as nx
 
 INDEL_PENALTY = -23
 MAX_NO_OF_MISMATCHES_AND_GAPS = 1
+NO_OF_TOP_PATHS_OUTPUT = 1
 CORR_E_VALUE_CUTOFF = float(1e200)
 
 def safe_log(sim):
@@ -104,6 +105,7 @@ def calculate_weights(Gp, G, path):
         Gp.add_edge(x, "end",  weight=end_weight)
 
 def find_k_highest_scoring_paths(Gp):
+    print NO_OF_TOP_PATHS_OUTPUT
 
     # From paper:
     # When we assume that each edge in G' represents only mismatches and indels and ignore different variations of mismatches or indels that can appear in a path, we can find a set of k highest scoring paths in G' by reducing the problem to finding k shortest paths from s to t in the following modified graph with edge weights only: first negate all the vertex and edge weights in G', then move each vertex weight into all its outgoing edges by changing each w(u, v) to w(u) + w(u, v) and setting w(v) = 0 for all vertices v. Note that the modified graph may have negative edge weights.
@@ -187,7 +189,12 @@ def format_result(path, G, results, outfile):
         print col1, col2, col3
         assert(len(col1)+len(col2)+len(col3) == len(col1)*3)
 
-        with open(outfile, 'a') as f:
+        if index == 0:
+            typ = 'w'
+        else:
+            typ = 'a'
+
+        with open(outfile, typ) as f:
             f.write("Result " + str(index) + ": score=" + str(score) + "\n")
             rows = [[col1[i], col2[i], col3[i]] for i in range(len(col1))]
             print rows
@@ -210,27 +217,45 @@ def format_result(path, G, results, outfile):
 
 # Parse input arguments
 def get_args():
+
     parser = argparse.ArgumentParser(description='Pathmatch')
-    parser.add_argument('q', type=str, help='file name containing query path')
-    parser.add_argument('i', type=str, help='file name containing input graph')
-    parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
+    parser.add_argument('query', type=str, help='file name containing query path')
+    parser.add_argument('input', type=str, help='file name containing input graph')
+    parser.add_argument('corr', type=str, help='file name containing correspondences between vertices')
+    parser.add_argument("output", type=str, help="output file name")
+    parser.add_argument("-g", type=int, help="maximum number of mismatches or indels between two matches, default=1")
+    #parser.add_argument("-l", type=int, choices=[0, 1], help="type of match score: 0 -- use similarity score as match score, 1 -- use negative logarithm of similarity score as match score, default=1")
+    #parser.add_argument("-s", type=int, choices=[0, 1], help="whether gaps are allowed at the start and the end of path alignment: 0 -- not allowed, i.e. must be matches at the start and end, 1 -- allowed, default=1")
+    parser.add_argument("-p", type=int, help="mismatch and indel penalty (>0), default=1")
+    parser.add_argument("-n", type=int, help="number of output paths, default=1")
+
     args = parser.parse_args()
     return args
 
 def main():
     args = get_args()
+
+    if args.g:
+        global MAX_NO_OF_MISMATCHES_AND_GAPS 
+        MAX_NO_OF_MISMATCHES_AND_GAPS = args.g
+    if args.p:
+        global INDEL_PENALTY
+        INDEL_PENALTY = -args.p
+    if args.n:
+        global NO_OF_TOP_PATHS_OUTPUT 
+        NO_OF_TOP_PATHS_OUTPUT = args.n
     
     # Read query path
     path = []
-    read_path(args.q, path)
+    read_path(args.query, path)
 
     # Read and create graph G from input network file
     G = nx.Graph()
-    read_network(args.i, G)
+    read_network(args.input, G)
 
     # Read and create graph G' from correspondence file
     Gp = nx.DiGraph() # directed graph
-    read_corr(args.c, path, Gp)
+    read_corr(args.corr, path, Gp)
 
     # Calculate the edge weights in G'
     calculate_weights(Gp, G, path)
@@ -238,7 +263,7 @@ def main():
     # Find k highest scoring paths in G
     results = find_k_highest_scoring_paths(Gp)
 
-    format_result(path, G, results, "test")
+    format_result(path, G, results, args.output)
 
 if __name__ == "__main__":
     main()
