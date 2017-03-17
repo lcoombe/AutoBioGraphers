@@ -5,7 +5,7 @@ import argparse
 import math
 import networkx as nx
 
-INDEL_PENALTY = -23
+INDEL_PENALTY = -1
 MAX_NO_OF_MISMATCHES_AND_GAPS = 1
 NO_OF_TOP_PATHS_OUTPUT = 1
 CORR_E_VALUE_CUTOFF = float(1e200)
@@ -56,8 +56,7 @@ def read_corr(corr_filename, path, Gp):
             # -l= "type of match score"
             #       1 -- use negative logarithm of similarity score as match score
             w = -safe_log(float(splits[2]))
-            #w = float(splits[2])
-            if w <= CORR_E_VALUE_CUTOFF:
+            if float(splits[2]) <= CORR_E_VALUE_CUTOFF:
                 Gp.add_node(p, weight=w)
 
 # Calculate the edge weights of graph G'
@@ -105,7 +104,6 @@ def calculate_weights(Gp, G, path):
         Gp.add_edge(x, "end",  weight=end_weight)
 
 def find_k_highest_scoring_paths(Gp):
-    print NO_OF_TOP_PATHS_OUTPUT
 
     # From paper:
     # When we assume that each edge in G' represents only mismatches and indels and ignore different variations of mismatches or indels that can appear in a path, we can find a set of k highest scoring paths in G' by reducing the problem to finding k shortest paths from s to t in the following modified graph with edge weights only: first negate all the vertex and edge weights in G', then move each vertex weight into all its outgoing edges by changing each w(u, v) to w(u) + w(u, v) and setting w(v) = 0 for all vertices v. Note that the modified graph may have negative edge weights.
@@ -136,9 +134,6 @@ def find_k_highest_scoring_paths(Gp):
 # Find k shortest, lowest weighted paths from source="start" to sink="end". There are negative edge weights.
 def find_k_shortest_paths(Gpp, k):
 
-    #print(nx.shortest_path(Gpp,source="start",target="end"))
-    #print nx.negative_edge_cycle(Gpp, weight='weight')
-
     def _get_weight(p):
         weight = 0
         for i in range(len(p)-1):
@@ -149,44 +144,41 @@ def find_k_shortest_paths(Gpp, k):
 
     paths = nx.johnson(Gpp, 'weight')
     best = paths["start"]["end"]
-    print best
 
     #dist = nx.floyd_warshall(Gpp, weight='weight')
     #keys = dist.keys()
     #print dist["start"]["end"]
 
     score = _get_weight(best)
-    print score
     return [(best, score)]
 
+# Format results and write to outfile given k shortest paths
 def format_result(path, G, results, outfile):
-    print results
     for index, item in enumerate(results):
         result, score = item
-        print "HERE"
-        col1, col2, col3 = [], [], []
+        col1, col2, col3 = [], [], [] # Each col in outfile respectively 
         result_q = [x[0] for x in result[1:-1]]
+
         for q in path:
             col1.append(q)
-            if q not in result_q:
+            if q not in result_q: # Deletion
                 col2.append("")
                 col3.append("-")
-            else:
+            else: # Hit/match
                 col2.append("--")
                 entry = result[result_q.index(q)+1]
-                print q, entry[0]
                 assert(q == entry[0])
                 col3.append(entry[1])
 
+                # Insertions
                 next_entry = result[result_q.index(q)+2]
                 if next_entry != 'end':
-                    # Find the shortest path d' in G from vi,j to vi+d,l
+                    # Find the shortest path d' in G from current entry to next entry
                     shortest_path = nx.shortest_path(G, entry[1], next_entry[1])
                     for a in shortest_path[1:-1]:
                         col1.append("-")
                         col2.append("")
                         col3.append(a)
-        print col1, col2, col3
         assert(len(col1)+len(col2)+len(col3) == len(col1)*3)
 
         if index == 0:
@@ -194,26 +186,18 @@ def format_result(path, G, results, outfile):
         else:
             typ = 'a'
 
+        # write results to outfile
         with open(outfile, typ) as f:
             f.write("Result " + str(index) + ": score=" + str(score) + "\n")
             rows = [[col1[i], col2[i], col3[i]] for i in range(len(col1))]
-            print rows
 
             widths = [max(map(len, col)) for col in zip(*rows)]
             for row in rows:
-                print "  ".join((val.ljust(width) for val, width in zip(row, widths)))
-                line = "  ".join((val.ljust(width) for val, width in zip(row, widths)))
+                line = "    ".join((val.ljust(width) for val, width in zip(row, widths)))
                 f.write(line+"\n")
-
-            #for i in range(len(col1)):
-                #f.write(col1[i] + "\t" + col2[i] + "\t" + col3[i] + "\n")
 
             f.write("\n\n")
     
-
-
-
-
 
 # Parse input arguments
 def get_args():
@@ -263,6 +247,7 @@ def main():
     # Find k highest scoring paths in G
     results = find_k_highest_scoring_paths(Gp)
 
+    # Format and write reslts to outfile
     format_result(path, G, results, args.output)
 
 if __name__ == "__main__":
