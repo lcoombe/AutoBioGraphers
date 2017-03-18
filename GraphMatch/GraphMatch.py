@@ -133,56 +133,43 @@ def areListsSame(list1, list2):
     return True
 
 def checkLists(list1):
+
     for entry in prefix_list:
-        if not areListsSame(list1, entry):
-            return False
-    return True
+        if areListsSame(list1, entry):
+            return True
+
+    return False
 
 #Main GraphMatch recurrence (Fig 3)
 def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
     for vi in corr:
         W = copy.copy(W_in)
-        #ll =copy.copy(lastList)
         if vi not in W:
             W.append(vi) 	# V0+ = Union of W and vi (that set of vertices)
-            #ll.append(False)
 	# 		If the induced subgraph by adding vi to W is connected, and not already found (in T):
             subgraph = G0.subgraph(W)
-            if T1.hasPath(W):
-                same_prefix = checkLists(W)
+            if T.hasPath(W):
+                same_prefix = checkLists(W) #Saving those paths with the same sequence of W --> meaning that they are still valid to check.
 
-            if nx.is_connected(subgraph) and (not T1.hasPath(W) or same_prefix):
+            if nx.is_connected(subgraph) and ((not T.hasPath(W)) or same_prefix):
                 count = 0
                 for vij in corr[vi]:
                     count += 1
                     W_prime = copy.copy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
                     W_prime.append(vij)
-                    W_prime_str = []
-                    for v in W_prime:
-                        W_prime_str.append(v.stringifyVertex())
-                    if isValidSolution(W, W_prime, G0, G_prime): #and not T.hasPath(W_prime_str):
+                    if isValidSolution(W, W_prime, G0, G_prime):
                         #score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
-                        # print W
-                        # print W_prime_str
-                        # print
 
                         results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
-                        #print ll
                         GraphMatch(W, W_prime, corr, G_prime, G0)
-                    T.addPath(W_prime_str)
-                T1.addPath(W)
-                prefix_list.append(W)
+                T.addPath(W)
+                prefix_list.append(W) #Need this to rescue the valid solutions that are otherwise lost when calling GraphMatch recursion multiple times with same W, different W'
 
 #NOTES:
-#I'm having trouble with keeping track of the V0+ vertices in the tree.
-#I think I'm seeing that if I add W to the path of T, then a lot of the combinations wanted aren't being generated
-#Ie. If have vi = H, and adding S. Say both H and s have corresponding vertices: H:[a, b] and S:[c, d]
-# Then get GraphMatch([H,S], [a,c], ..) call
-# Eventually, that will return and add [H, S] to the Tree.
-# Then, GraphMatch([H,S], [a,d], ..) might be called, but then it would appear to have that path in T already, and
-# wouldn't go forward even though this could be a valid solution
-
-#For now, just adding the W_prime paths, since we know we don't want to look at multiple of those collections of vertices multiple times.
+#Bit hacky, but one way I figured we could rescue the solutions is to keep track of a list of what we added to the tree
+# What we care about is if there is exactly the same list, with W in the exact same order in prefix_list
+# Then, can assume this is a GraphMatch run with same W, but different W_prime
+# It's a bit weird - open to suggestions for better ways to do it
 
 def main():
     # Reading in the arguments from the command line
@@ -212,13 +199,6 @@ def main():
             print w + "\t" + p.name
         print
 
-    # T1.printTree()
-    # print
-    # T.printTree()
-
-    sub = nx.subgraph(G0_queryGraph, ["4.2.1.36","C01251", "C00010", "2.3.3.14", "C00024"])
-    print nx.is_connected(sub)
-    print sorted(nx.connected_components(sub), key = len, reverse=True)
 
 
 if __name__ == '__main__':
