@@ -20,6 +20,11 @@ m = 1
 T = Tree()
 results = []
 
+T1 = Tree()
+ll = []
+
+prefix_list = []
+
 #HELPER FUNCTIONS
 
 #Reading in input and query graphs
@@ -119,27 +124,54 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
                     return False
     return True
 
+def areListsSame(list1, list2):
+    if len(list1) != len(list2):
+        return False
+    for i in range(0, len(list1)):
+        if list1[i] != list2[i]:
+            return False
+    return True
+
+def checkLists(list1):
+    for entry in prefix_list:
+        if not areListsSame(list1, entry):
+            return False
+    return True
 
 #Main GraphMatch recurrence (Fig 3)
 def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
     for vi in corr:
         W = copy.copy(W_in)
+        #ll =copy.copy(lastList)
         if vi not in W:
             W.append(vi) 	# V0+ = Union of W and vi (that set of vertices)
+            #ll.append(False)
 	# 		If the induced subgraph by adding vi to W is connected, and not already found (in T):
             subgraph = G0.subgraph(W)
-            if nx.is_connected(subgraph) :
+            if T1.hasPath(W):
+                same_prefix = checkLists(W)
+
+            if nx.is_connected(subgraph) and (not T1.hasPath(W) or same_prefix):
+                count = 0
                 for vij in corr[vi]:
+                    count += 1
                     W_prime = copy.copy(W_prime_in) #Making copies because with recurrence, don't want to have pass by reference be an issue
                     W_prime.append(vij)
                     W_prime_str = []
                     for v in W_prime:
                         W_prime_str.append(v.stringifyVertex())
-                    if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
+                    if isValidSolution(W, W_prime, G0, G_prime): #and not T.hasPath(W_prime_str):
                         #score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
+                        # print W
+                        # print W_prime_str
+                        # print
+
                         results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
+                        #print ll
                         GraphMatch(W, W_prime, corr, G_prime, G0)
                     T.addPath(W_prime_str)
+                T1.addPath(W)
+                prefix_list.append(W)
 
 #NOTES:
 #I'm having trouble with keeping track of the V0+ vertices in the tree.
@@ -175,10 +207,19 @@ def main():
     for r in results:
         W = r[0]
         W_prime = r[1]
-        for w in W:
+        for w in sorted(W):
             p = getCorrespondingVertex(w, W_prime)
             print w + "\t" + p.name
         print
+
+    # T1.printTree()
+    # print
+    # T.printTree()
+
+    sub = nx.subgraph(G0_queryGraph, ["4.2.1.36","C01251", "C00010", "2.3.3.14", "C00024"])
+    print nx.is_connected(sub)
+    print sorted(nx.connected_components(sub), key = len, reverse=True)
+
 
 if __name__ == '__main__':
     main()
