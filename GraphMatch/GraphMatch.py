@@ -7,18 +7,21 @@ from Corr_Vertex import Corr_Vertex
 from Tree import Tree
 from networkx.drawing.nx_pydot import write_dot
 import copy
+from math import log
 
 #EXAMPLE USAGE: python GraphMatch.py test-data/query test-data/input test-data/corr_short
 
 #GLOBAL VARIABLES
 
 #Setting parameters based on Fig. 8 Caption from paper
-non_assoc_vertex_penalty = -1.0
-indel_penalty = -0.1
+non_assoc_vertex_penalty = 1.0
+indel_penalty = 0.1
 m = 1
 #Tree to keep track of already enumerated subgraphs
 T = Tree()
 results = []
+scores = []
+score_method = 1
 
 #HELPER FUNCTIONS
 
@@ -85,14 +88,18 @@ def makeGraph_prime(corr, G0, G):
                     G_prime.add_edge(vij_string, vkl_string)
     return G_prime
 
+#Given a vertex vi, and a list of corresponding vertex, return the corresponding vertex of vi
+def getCorrespondingVertex(v, correspList):
+    for c in correspList:
+        if c.queryVertex == v:
+            return c
+    return None #No corresponding vertex
 
 #TODO: Implement Scoring
 #Scoring the alignment between two graphs G0 and G0'
 #Potentially return the G0' subgraph? (including the indel vertices)
 #Just alter parameters as needed -- I just put in placeholders
 def ScoreAlignment(W, W_prime, G, G0):
-    #print "TODO: Score Alignment code"
-    x = 1
 # - For each vertex in G0', find the vertex correspondance in V0 (if exists)
 # - For each vertex correspondance, add to the score
 # - For each vertex in V0 that wasn't in a correspondance (as above), penalize by delta.
@@ -101,12 +108,53 @@ def ScoreAlignment(W, W_prime, G, G0):
 # 		- Find the path length between vij and vkl in G0'
 # 		- Penalize the score by -(path length-1)*delta
 
-#Given a vertex vi, and a list of corresponding vertex, return the corresponding vertex of vi
-def getCorrespondingVertex(v, correspList):
-    for c in correspList:
-        if c.queryVertex == v:
-            return c
-    print "FAIL! in getCorrespondingVertex" #Shouldn't get here, as should have a corresponding vertex present
+    score = 0
+    assoc_vertices = []
+    if score_method: #Use -log(corresp score) as match value. want to maximize this score.
+        for node in G0.node:
+            corresp = getCorrespondingVertex(node, W_prime)
+            if corresp is None:
+                score = score - non_assoc_vertex_penalty
+            else:
+                assoc_vertices.append(node)
+                if score_method:
+                    if corresp.score <= 1e-200:
+                        score += -1.0*log(1e-200)
+                    else:
+                        score += -1.0*log(corresp.score)
+                else:
+                    score += corresp.score
+        for i in range(0, len(assoc_vertices)):
+            for j in range(i+1, len(assoc_vertices)):
+                vi = assoc_vertices[i]
+                vk = assoc_vertices[j]
+                if G0.has_edge(vi, vk):
+                    vij = getCorrespondingVertex(vi, W_prime)
+                    vkl = getCorrespondingVertex(vk, W_prime)
+                    path_G = nx.shortest_path(G, vij.name, vkl.name)
+                    pathLen = len(path_G) - 2
+                    score = score - pathLen*indel_penalty
+    else: #Using raw correspondance score for matching -- want to maximize this score.
+        for node in G0.node:
+            corresp = getCorrespondingVertex(node, W_prime)
+            if corresp is None:
+                score = score - non_assoc_vertex_penalty
+            else:
+                assoc_vertices.append(node)
+                score -= corresp.score
+        for i in range(0, len(assoc_vertices)):
+            for j in range(i+1, len(assoc_vertices)):
+                vi = assoc_vertices[i]
+                vk = assoc_vertices[j]
+                if G0.has_edge(vi, vk):
+                    vij = getCorrespondingVertex(vi, W_prime)
+                    vkl = getCorrespondingVertex(vk, W_prime)
+                    path_G = nx.shortest_path(G, vij.name, vkl.name)
+                    pathLen = len(path_G) - 2
+                    score = score - pathLen*indel_penalty
+    return score
+
+
 
 #Determining if the vertex combos are a valid solution
 def isValidSolution(V0_plus, W_prime, G0, G_prime):
@@ -122,7 +170,7 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
 
 
 #Main GraphMatch recurrence (Fig 3)
-def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
+def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, G):
     for vi in corr:
         W = copy.copy(W_in)
         if vi not in W:
@@ -137,13 +185,15 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
                     for v in W_prime:
                         W_prime_str.append(v.stringifyVertex())
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
-                        #score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
+                        score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
                         results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
                         for w in W:
                             p = getCorrespondingVertex(w, W_prime)
                             print w + "\t" + p.name
+                        print score
                         print
-                        GraphMatch(W, W_prime, corr, G_prime, G0)
+                        scores.append(score)
+                        GraphMatch(W, W_prime, corr, G_prime, G0, G)
                     T.addPath(W_prime_str)
 
 #NOTES:
@@ -164,16 +214,19 @@ def main():
     parser.add_argument('i', type=str, help='file name containing reference graph')
     parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
     parser.add_argument('-m', type=int, help = 'Number of indels allowed in resulting subgraph [default=1]', default=1)
-    parser.add_argument('-ip', type=float, help='Indel Penalty [default=-0.1]', default=-0.1)
-    parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=-1]', default=-1)
+    parser.add_argument('-ip', type=float, help='Indel Penalty [default=0.1]', default=-0.1)
+    parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=1]', default=-1)
+    parser.add_argument('-s', type=int, help='Match score form: 0-raw match score; 1- -log(match score)', default=1)
     args = parser.parse_args()
 
     global m
     global indel_penalty
     global non_assoc_vertex_penalty
+    global score_method
     m = args.m
     indel_penalty = args.ip
     non_assoc_vertex_penalty = args.np
+    score_method = args.s
 
 
     G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
@@ -182,7 +235,7 @@ def main():
     corr = readCorrespondances(args.c) #Dictionary: key=query vertex name; value=list of Corr_Vertex
     Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph) #Node: Stringified Corr_vertex (See class function)
 
-    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph) #Apply Graph Match with empty sets at first
+    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph, G_refGraph) #Apply Graph Match with empty sets at first
 
     write_dot(G0_queryGraph, 'G0.dot')
     write_dot(Gprime_graph, 'G_prime.dot')
@@ -195,6 +248,8 @@ def main():
     #         p = getCorrespondingVertex(w, W_prime)
     #         print w + "\t" + p.name
     #     print
+
+    print sorted(scores)
 
 if __name__ == '__main__':
     main()
