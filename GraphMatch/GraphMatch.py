@@ -24,6 +24,7 @@ results = []
 
 #Reading in input and query graphs
 def readGraph(filename):
+
     G_Graph = nx.Graph()
     refFile = open(filename, 'r')
     for line in refFile:
@@ -138,6 +139,10 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0):
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
                         #score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
                         results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
+                        for w in W:
+                            p = getCorrespondingVertex(w, W_prime)
+                            print w + "\t" + p.name
+                        print
                         GraphMatch(W, W_prime, corr, G_prime, G0)
                     T.addPath(W_prime_str)
 
@@ -158,7 +163,18 @@ def main():
     parser.add_argument('q', type=str, help='file name containing query graph')
     parser.add_argument('i', type=str, help='file name containing reference graph')
     parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
+    parser.add_argument('-m', type=int, help = 'Number of indels allowed in resulting subgraph [default=1]', default=1)
+    parser.add_argument('-ip', type=float, help='Indel Penalty [default=-0.1]', default=-0.1)
+    parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=-1]', default=-1)
     args = parser.parse_args()
+
+    global m
+    global indel_penalty
+    global non_assoc_vertex_penalty
+    m = args.m
+    indel_penalty = args.ip
+    non_assoc_vertex_penalty = args.np
+
 
     G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
     G0_queryGraph = readGraph(args.q) #Node: String of query vertex name
@@ -172,13 +188,13 @@ def main():
     write_dot(Gprime_graph, 'G_prime.dot')
 
 #TEMPORARY: PRINTING RESULTS (TODO: Keep track of top k alignments)
-    for r in results:
-        W = r[0]
-        W_prime = r[1]
-        for w in W:
-            p = getCorrespondingVertex(w, W_prime)
-            print w + "\t" + p.name
-        print
+    # for r in results:
+    #     W = r[0]
+    #     W_prime = r[1]
+    #     for w in W:
+    #         p = getCorrespondingVertex(w, W_prime)
+    #         print w + "\t" + p.name
+    #     print
 
 if __name__ == '__main__':
     main()
