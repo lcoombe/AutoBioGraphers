@@ -8,6 +8,7 @@ from Tree import Tree
 from networkx.drawing.nx_pydot import write_dot
 import copy
 from math import log
+from Alignment import Alignment
 
 #EXAMPLE USAGE: python GraphMatch.py test-data/query test-data/input test-data/corr_short
 
@@ -22,6 +23,10 @@ T = Tree()
 results = []
 scores = []
 score_method = 1
+
+max_score = 0
+num_query_nodes = 0
+top_alignments = []
 
 #HELPER FUNCTIONS
 
@@ -95,21 +100,13 @@ def getCorrespondingVertex(v, correspList):
             return c
     return None #No corresponding vertex
 
-#TODO: Implement Scoring
 #Scoring the alignment between two graphs G0 and G0'
 #Potentially return the G0' subgraph? (including the indel vertices)
 #Just alter parameters as needed -- I just put in placeholders
 def ScoreAlignment(W, W_prime, G, G0):
-# - For each vertex in G0', find the vertex correspondance in V0 (if exists)
-# - For each vertex correspondance, add to the score
-# - For each vertex in V0 that wasn't in a correspondance (as above), penalize by delta.
-# - For each pair of associations (vi, vij), (vk, vkl) (such that vi and vj are in V0, and their corresponding vertices vij, vkl are in V0'):
-# 	- If there is a (vi, vk) edge in G0:
-# 		- Find the path length between vij and vkl in G0'
-# 		- Penalize the score by -(path length-1)*delta
-
     score = 0
     assoc_vertices = []
+    indel_vertices = []
     if score_method: #Use -log(corresp score) as match value. want to maximize this score.
         for node in G0.node:
             corresp = getCorrespondingVertex(node, W_prime)
@@ -124,16 +121,6 @@ def ScoreAlignment(W, W_prime, G, G0):
                         score += -1.0*log(corresp.score)
                 else:
                     score += corresp.score
-        for i in range(0, len(assoc_vertices)):
-            for j in range(i+1, len(assoc_vertices)):
-                vi = assoc_vertices[i]
-                vk = assoc_vertices[j]
-                if G0.has_edge(vi, vk):
-                    vij = getCorrespondingVertex(vi, W_prime)
-                    vkl = getCorrespondingVertex(vk, W_prime)
-                    path_G = nx.shortest_path(G, vij.name, vkl.name)
-                    pathLen = len(path_G) - 2
-                    score = score - pathLen*indel_penalty
     else: #Using raw correspondance score for matching -- want to maximize this score.
         for node in G0.node:
             corresp = getCorrespondingVertex(node, W_prime)
@@ -142,7 +129,7 @@ def ScoreAlignment(W, W_prime, G, G0):
             else:
                 assoc_vertices.append(node)
                 score -= corresp.score
-        for i in range(0, len(assoc_vertices)):
+    for i in range(0, len(assoc_vertices)):
             for j in range(i+1, len(assoc_vertices)):
                 vi = assoc_vertices[i]
                 vk = assoc_vertices[j]
@@ -151,9 +138,11 @@ def ScoreAlignment(W, W_prime, G, G0):
                     vkl = getCorrespondingVertex(vk, W_prime)
                     path_G = nx.shortest_path(G, vij.name, vkl.name)
                     pathLen = len(path_G) - 2
+                    for i in range(0, pathLen):
+                        indel_vertices.append(path_G[i+1])
                     score = score - pathLen*indel_penalty
-    return score
 
+    return Alignment(score, W_prime, indel_vertices)
 
 
 #Determining if the vertex combos are a valid solution
@@ -168,9 +157,30 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
                     return False
     return True
 
+def continueDFS(W, score, lower_bound):
+    num = len(W)
+    if score_method:
+        l = -1*log(1e-200)
+    else:
+        l = 0
+    upper_bound = score + l*(num_query_nodes - num)
+    if upper_bound < lower_bound:
+        return False
+    else:
+        return True
+
+
+def updateTopAlignments(align):
+    top_alignments.sort(key=lambda x: x.score)
+    lowest_score = top_alignments[0].score
+    if lowest_score < align.score:
+        top_alignments[0] = align
+    return continueDFS(align.correspVertices, align.score, lowest_score)
+
 
 #Main GraphMatch recurrence (Fig 3)
 def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, G):
+    global max_score
     for vi in corr:
         W = copy.copy(W_in)
         if vi not in W:
@@ -185,15 +195,10 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, G):
                     for v in W_prime:
                         W_prime_str.append(v.stringifyVertex())
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
-                        score = ScoreAlignment(W, W_prime, G, G0) #TODO: Record the alignment and its score
-                        results.append((W, W_prime)) #TODO: Replace this with keeping track of top k alignments
-                        for w in W:
-                            p = getCorrespondingVertex(w, W_prime)
-                            print w + "\t" + p.name
-                        print score
-                        print
-                        scores.append(score)
-                        GraphMatch(W, W_prime, corr, G_prime, G0, G)
+                        alignment = ScoreAlignment(W, W_prime, G, G0)
+                        continue_search = updateTopAlignments(alignment)
+                        if continue_search:
+                            GraphMatch(W, W_prime, corr, G_prime, G0, G)
                     T.addPath(W_prime_str)
 
 #NOTES:
@@ -216,21 +221,34 @@ def main():
     parser.add_argument('-m', type=int, help = 'Number of indels allowed in resulting subgraph [default=1]', default=1)
     parser.add_argument('-ip', type=float, help='Indel Penalty [default=0.1]', default=-0.1)
     parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=1]', default=-1)
-    parser.add_argument('-s', type=int, help='Match score form: 0-raw match score; 1- -log(match score)', default=1)
+    parser.add_argument('-s', type=int, help='Match score form: 0-raw match score; 1- -log(match score) [default=1]', default=1)
+    parser.add_argument('-k', type=int, help='Number of top alignments to output [default=3]', default=3)
     args = parser.parse_args()
 
     global m
     global indel_penalty
     global non_assoc_vertex_penalty
     global score_method
+    global top_alignments
     m = args.m
     indel_penalty = args.ip
     non_assoc_vertex_penalty = args.np
     score_method = args.s
 
+    #Instantiate the top alignments with low scoring Alignments (So they will get replaced)
+    if score_method: #Using -log(E-value) as match score, so want to maximize this
+        score_placeholder = float("-inf")
+    else:
+        score_placeholder = float("inf")
+    for i in range(0, args.k):
+        a = Alignment(score_placeholder, [], [])
+        top_alignments.append(a)
+
 
     G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
     G0_queryGraph = readGraph(args.q) #Node: String of query vertex name
+    global num_query_nodes
+    num_query_nodes = nx.number_of_nodes(G0_queryGraph)
 
     corr = readCorrespondances(args.c) #Dictionary: key=query vertex name; value=list of Corr_Vertex
     Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph) #Node: Stringified Corr_vertex (See class function)
@@ -240,16 +258,27 @@ def main():
     write_dot(G0_queryGraph, 'G0.dot')
     write_dot(Gprime_graph, 'G_prime.dot')
 
-#TEMPORARY: PRINTING RESULTS (TODO: Keep track of top k alignments)
-    # for r in results:
-    #     W = r[0]
-    #     W_prime = r[1]
-    #     for w in W:
-    #         p = getCorrespondingVertex(w, W_prime)
-    #         print w + "\t" + p.name
-    #     print
+    result_count = 1
+    for align in top_alignments:
+        print "score: %f" % align.score
+        list_nodes = []
+        for w in align.correspVertices:
+            print "%s \t %s" % (w.queryVertex, w.name)
+            list_nodes.append(w.name)
+        print "Indels:"
+        for i in align.indelVertices:
+            print i
+            list_nodes.append(i)
+        result = nx.subgraph(G_refGraph, list_nodes)
+        for n in result.node:
+            if n in align.indelVertices:
+                result.node[n]['color'] = 'red'
+            else:
+                result.node[n]['color'] = 'blue'
+        output_str = "result" + str(result_count) + ".dot"
+        write_dot(result, output_str)
+        result_count += 1
 
-    print sorted(scores)
 
 if __name__ == '__main__':
     main()
