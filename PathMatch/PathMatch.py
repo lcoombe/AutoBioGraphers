@@ -130,6 +130,37 @@ def find_k_highest_scoring_paths(Gp):
     return find_k_shortest_paths(Gpp, 3)
 
 
+def shorten_result(col1, col2, col3):
+
+    def _helper(col1, col2, col3):
+        for i in range(len(col1))[:-1]:
+            a1, b1 = col1[i], col3[i]
+            a2, b2 = col1[i+1], col3[i+1]
+
+            if a1 == "-" and b1 != "-":
+                if a2 != "-" and b2 == "-":
+                    c1, c2 = a2, b1
+                    new_col1 = col1[:i] + [c1] + col1[i+2:]
+                    new_col3 = col3[:i] + [c2] + col3[i+2:]
+                    new_col2 = col2[:i] + col2[i+1:]
+                    return [True, new_col1, new_col2, new_col3]
+
+            if a1 != "-" and b1 == "-":
+                if a2 == "-" and b2 != "-":
+                    new_col1 = col1[:i] + [c1] + col1[i+2:]
+                    new_col3 = col3[:i] + [c2] + col3[i+2:]
+                    new_col2 = col2[:i] + col2[i+1:]
+                    return [True, new_col1, new_col2, new_col3]
+        return [False, [], [], []]
+
+
+    new_col1, new_col2, new_col3 = col1, col2, col3
+    result = _helper(col1, col2, col3)
+
+    while result[0]:
+        flag, new_col1, new_col2, new_col3 = result
+        result  = _helper(new_col1, new_col2, new_col3)
+    return new_col1, new_col2, new_col3
 
 # Format results and write to outfile given k shortest paths
 # Results = [ (score, [('s', n1), (n1, n2), (n2, 't')])....]
@@ -162,6 +193,8 @@ def format_result(path, G, results, outfile):
                         col3.append(a)
 
         assert(len(col1)+len(col2)+len(col3) == len(col1)*3)
+        new_col1, new_col2, new_col3 = shorten_result(col1, col2, col3)
+        assert(len(new_col1)+len(new_col2)+len(new_col3) == len(new_col1)*3)
 
         if index == 0:
             typ = 'w'
@@ -171,7 +204,7 @@ def format_result(path, G, results, outfile):
         # write results to outfile
         with open(outfile, typ) as f:
             f.write("Result " + str(index+1) + ": score=" + str(score) + "\n")
-            rows = [[col1[i], col2[i], col3[i]] for i in range(len(col1))]
+            rows = [[new_col1[i], new_col2[i], new_col3[i]] for i in range(len(new_col1))]
 
             widths = [max(map(len, col)) for col in zip(*rows)]
             for row in rows:
@@ -180,7 +213,6 @@ def format_result(path, G, results, outfile):
 
             f.write("\n\n")
     
-
 # Parse input arguments
 def get_args():
 
