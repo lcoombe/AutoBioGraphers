@@ -354,8 +354,9 @@ def find_k_shortest_paths(graph, k):
     results = []
     for cost, sol in e.get_successive_shortest_paths():
         e = (cost, sol)
-        results.append(e)
-        counter+=1
+        if e not in results:
+            results.append(e)
+            counter+=1
         if counter==k:
             break
     return results

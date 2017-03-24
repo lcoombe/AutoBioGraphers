@@ -9,7 +9,7 @@ from ep import find_k_shortest_paths
 
 INDEL_PENALTY = -1
 MAX_NO_OF_MISMATCHES_AND_GAPS = 1
-NO_OF_TOP_PATHS_OUTPUT = 1
+NO_OF_TOP_PATHS_OUTPUT = 3
 CORR_E_VALUE_CUTOFF = float(1e200)
 
 def safe_log(sim):
@@ -127,7 +127,7 @@ def find_k_highest_scoring_paths(Gp):
             w = negated_node_weight + negated_edge_weight 
             Gpp.add_edge(e[0], e[1], weight=w)
 
-    return find_k_shortest_paths(Gpp, 3)
+    return find_k_shortest_paths(Gpp, NO_OF_TOP_PATHS_OUTPUT)
 
 
 def shorten_result(col1, col2, col3):
@@ -225,7 +225,7 @@ def get_args():
     #parser.add_argument("-l", type=int, choices=[0, 1], help="type of match score: 0 -- use similarity score as match score, 1 -- use negative logarithm of similarity score as match score, default=1")
     #parser.add_argument("-s", type=int, choices=[0, 1], help="whether gaps are allowed at the start and the end of path alignment: 0 -- not allowed, i.e. must be matches at the start and end, 1 -- allowed, default=1")
     parser.add_argument("-p", type=float, help="mismatch and indel penalty (>0), default=1")
-    parser.add_argument("-n", type=int, help="number of output paths, default=1")
+    parser.add_argument("-n", type=int, help="number of output paths, default=3")
 
     args = parser.parse_args()
     return args
@@ -233,13 +233,13 @@ def get_args():
 def main():
     args = get_args()
 
-    if args.g:
+    if args.g is not None:
         global MAX_NO_OF_MISMATCHES_AND_GAPS 
         MAX_NO_OF_MISMATCHES_AND_GAPS = args.g
-    if args.p:
+    if args.p is not None:
         global INDEL_PENALTY
         INDEL_PENALTY = -args.p
-    if args.n:
+    if args.n is not None:
         global NO_OF_TOP_PATHS_OUTPUT 
         NO_OF_TOP_PATHS_OUTPUT = args.n
     
