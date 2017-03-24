@@ -31,10 +31,10 @@ import sys
 from collections import defaultdict
 import time
 import logging
-try:
-    import matplotlib.pyplot as plt
-except:
-    raise
+#try:
+#    import matplotlib.pyplot as plt
+#except:
+#    raise
 logging.basicConfig(filename = 'eppstein.log', level = logging.DEBUG)
 total_edges_counter = 0
 
@@ -345,36 +345,19 @@ def create_neg_weighted_graph():
     graph.add_weighted_edges_from(edges)
     return graph
     
-def main():
+def find_k_shortest_paths(graph, k):
 
-    graph = create_pos_weighted_graph()
+    #graph = create_pos_weighted_graph()
     e=EppsteinShortestPathAlgorithm(graph)
     e._pre_process()
     counter=0
+    results = []
     for cost, sol in e.get_successive_shortest_paths():
+        e = (cost, sol)
+        results.append(e)
         counter+=1
-        if counter==100:
+        if counter==k:
             break
-        print cost, sol
+    return results
+
     #draw_graph(graph)
-    
-if __name__ == "__main__":
-    main()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

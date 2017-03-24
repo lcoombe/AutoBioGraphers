@@ -5,6 +5,8 @@ import argparse
 import math
 import networkx as nx
 
+from ep import find_k_shortest_paths
+
 INDEL_PENALTY = -1
 MAX_NO_OF_MISMATCHES_AND_GAPS = 1
 NO_OF_TOP_PATHS_OUTPUT = 1
@@ -66,18 +68,18 @@ def calculate_weights(Gp, G, path):
     # Each edge (vij , vi+d,l) represents that it is always possible to find a path from vij to vi+d,l in G so that there are a total of at most m mismatches or indels between the matches (pi,vij) and (pi+d,vi+d,l). To impose mismatch and indel penalties, if DELTA <= 0 represents both the mismatch and indel penalty, set the weight of each edge (vij , vi+d,l ) to (max(d, d' ) − 1)DELTA, the weight of each edge (s, vij ) to (i − 1)DELTA, and the weight of each edge (vij , t) to (n − i)DELTA. The above construction reduces the path matching problem to finding a path p' from s to t in G' with the maximum sum of vertex and edge weights.
 
     # Adding source and sink nodes with weight 0
-    Gp.add_node("start", weight=0)
-    Gp.add_node("end", weight=0)
+    Gp.add_node("s", weight=0)
+    Gp.add_node("t", weight=0)
 
     # Loop through all possible pairs of verticies except for start, end nodes
     # node = (pi-vertex in query path, vij-vertex in input graph)
     for x in Gp.nodes():
-        if x == "start" or x == "end":
+        if x == "s" or x == "t":
             continue
         i = path.index(x[0]) # Find out value of i for node x = vi,j
 
         for y in Gp.nodes():
-            if y == "start" or y == "end" or y == x:
+            if y == "s" or y == "t" or y == x:
                 continue
             i_d = path.index(y[0]) # Find out value of i+d for node y = vi+d,l
             d = i_d - i
@@ -97,11 +99,11 @@ def calculate_weights(Gp, G, path):
 
         # Start
         start_weight = (i)*INDEL_PENALTY
-        Gp.add_edge("start", x, weight=start_weight)
+        Gp.add_edge("s", x, weight=start_weight)
 
         # End
-        end_weight = (len(path)-i-1)*INDEL_PENALTY # !! I think? n is length of path? 
-        Gp.add_edge(x, "end",  weight=end_weight)
+        end_weight = (len(path)-i-1)*INDEL_PENALTY
+        Gp.add_edge(x, "t",  weight=end_weight)
 
 def find_k_highest_scoring_paths(Gp):
 
@@ -125,32 +127,31 @@ def find_k_highest_scoring_paths(Gp):
             w = negated_node_weight + negated_edge_weight 
             Gpp.add_edge(e[0], e[1], weight=w)
 
-    ## TODO!!!
-    return find_k_shortest_paths(Gpp, 1)
+    print find_k_shortest_paths(Gpp, 3)
 
 
 
 # !!!TODO!!!
 # Find k shortest, lowest weighted paths from source="start" to sink="end". There are negative edge weights.
-def find_k_shortest_paths(Gpp, k):
-
-    def _get_weight(p):
-        weight = 0
-        for i in range(len(p)-1):
-            #print best[i], best[i+1]
-            #print Gpp[best[i]][best[i+1]]
-            weight += Gpp[p[i]][p[i+1]]['weight']
-        return weight
-
-    paths = nx.johnson(Gpp, 'weight')
-    best = paths["start"]["end"]
-
-    #dist = nx.floyd_warshall(Gpp, weight='weight')
-    #keys = dist.keys()
-    #print dist["start"]["end"]
-
-    score = _get_weight(best)
-    return [(best, score)]
+#def find_k_shortest_paths(Gpp, k):
+#
+#    def _get_weight(p):
+#        weight = 0
+#        for i in range(len(p)-1):
+#            #print best[i], best[i+1]
+#            #print Gpp[best[i]][best[i+1]]
+#            weight += Gpp[p[i]][p[i+1]]['weight']
+#        return weight
+#
+#    paths = nx.johnson(Gpp, 'weight')
+#    best = paths["start"]["end"]
+#
+#    #dist = nx.floyd_warshall(Gpp, weight='weight')
+#    #keys = dist.keys()
+#    #print dist["start"]["end"]
+#
+#    score = _get_weight(best)
+#    return [(best, score)]
 
 # Format results and write to outfile given k shortest paths
 def format_result(path, G, results, outfile):
@@ -248,7 +249,7 @@ def main():
     results = find_k_highest_scoring_paths(Gp)
 
     # Format and write reslts to outfile
-    format_result(path, G, results, args.output)
+    #format_result(path, G, results, args.output)
 
 if __name__ == "__main__":
     main()
