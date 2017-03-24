@@ -13,17 +13,13 @@ from Alignment import Alignment
 #EXAMPLE USAGE: python GraphMatch.py test-data/query test-data/input test-data/corr_short
 
 #GLOBAL VARIABLES
-
-#Setting parameters based on Fig. 8 Caption from paper
 non_assoc_vertex_penalty = 1.0
 indel_penalty = 0.1
 m = 1
-#Tree to keep track of already enumerated subgraphs
 T = Tree()
 results = []
 scores = []
 score_method = 1
-
 max_score = 0
 num_query_nodes = 0
 top_alignments = []
@@ -48,7 +44,7 @@ def readGraph(filename):
     refFile.close()
     return G_Graph
 
-#     //Load in correspondances between vertices in G and G0
+# Load in correspondances between vertices in G and G0
 #Format of input file: v1 v2 corr: where v1 is a vertex in the query graph, v2 is a vertex in the input graph
 def readCorrespondances(corrFileName):
     corr = {} #Dictionary: key = query node name. Value = list of corresponding vertices
@@ -66,10 +62,7 @@ def readCorrespondances(corrFileName):
     corrFile.close()
     return corr
 
-#     //Make G' --> will be used when enumerating solution graphs G0'
-# V' = Union of all corresponding vertices (from dictionary structure)
-# for each pair of corresponding vertices vij and vkl:
-# 	If the vertices are not associated with the same vi, add edge (vij, vkl) to E' if (vi, vk) have edge in G0, and length of shortest path from vij to vkl in G is at most m+1
+# Making G' --> will be used when enumerating solution graphs G0'
 def makeGraph_prime(corr, G0, G):
     V_prime = []
     G_prime = nx.Graph()
@@ -101,12 +94,12 @@ def getCorrespondingVertex(v, correspList):
     return None #No corresponding vertex
 
 #Scoring the alignment between two graphs G0 and G0'
-#Potentially return the G0' subgraph? (including the indel vertices)
-#Just alter parameters as needed -- I just put in placeholders
-def ScoreAlignment(W, W_prime, G, G0):
+def ScoreAlignment(W_prime, G, G0):
     score = 0
     assoc_vertices = []
     indel_vertices = []
+    query_edges = []
+    ref_edges = []
     if score_method: #Use -log(corresp score) as match value. want to maximize this score.
         for node in G0.node:
             corresp = getCorrespondingVertex(node, W_prime)
@@ -114,13 +107,11 @@ def ScoreAlignment(W, W_prime, G, G0):
                 score = score - non_assoc_vertex_penalty
             else:
                 assoc_vertices.append(node)
-                if score_method:
-                    if corresp.score <= 1e-200:
-                        score += -1.0*log(1e-200)
-                    else:
-                        score += -1.0*log(corresp.score)
+                if corresp.score <= 1e-200:
+                    score += -1.0*log(1e-200)
                 else:
-                    score += corresp.score
+                    score += -1.0*log(corresp.score)
+
     else: #Using raw correspondance score for matching -- want to maximize this score.
         for node in G0.node:
             corresp = getCorrespondingVertex(node, W_prime)
@@ -129,25 +120,28 @@ def ScoreAlignment(W, W_prime, G, G0):
             else:
                 assoc_vertices.append(node)
                 score -= corresp.score
-    for i in range(0, len(assoc_vertices)):
-            for j in range(i+1, len(assoc_vertices)):
-                vi = assoc_vertices[i]
-                vk = assoc_vertices[j]
-                if G0.has_edge(vi, vk):
-                    vij = getCorrespondingVertex(vi, W_prime)
-                    vkl = getCorrespondingVertex(vk, W_prime)
-                    path_G = nx.shortest_path(G, vij.name, vkl.name)
-                    pathLen = len(path_G) - 2
-                    for i in range(0, pathLen):
-                        indel_vertices.append(path_G[i+1])
-                    score = score - pathLen*indel_penalty
 
-    return Alignment(score, W_prime, indel_vertices)
+    #Indel penalties
+    for i in range(0, len(assoc_vertices)):
+        for j in range(i+1, len(assoc_vertices)):
+            vi = assoc_vertices[i]
+            vk = assoc_vertices[j]
+            if G0.has_edge(vi, vk):
+                query_edges.append((vi, vk))
+                vij = getCorrespondingVertex(vi, W_prime)
+                vkl = getCorrespondingVertex(vk, W_prime)
+                path_G = nx.shortest_path(G, vij.name, vkl.name)
+                pathLen = len(path_G) - 2
+                for h in range(0, pathLen):
+                    indel_vertices.append(path_G[h+1])
+                score = score - pathLen*indel_penalty
+                ref_edges.append(path_G)
+
+    return Alignment(score, copy.copy(W_prime), indel_vertices, query_edges, ref_edges)
 
 
 #Determining if the vertex combos are a valid solution
 def isValidSolution(V0_plus, W_prime, G0, G_prime):
-	# For each pair of  vertices (vi, vk) in V0+:
     for vi in V0_plus:
         for vk in V0_plus:
             if vi != vk and G0.has_edge(vi, vk):
@@ -157,19 +151,21 @@ def isValidSolution(V0_plus, W_prime, G0, G_prime):
                     return False
     return True
 
+#Returns True if based on the branch and bound approach, the recurrence should continue. Returns False if can't get to better alignment than top k
+# alignments down this branch, so the search is pruned.
 def continueDFS(W, score, lower_bound):
     num = len(W)
     if score_method:
         l = -1*log(1e-200)
     else:
-        l = 0
+        return True
     upper_bound = score + l*(num_query_nodes - num)
     if upper_bound < lower_bound:
         return False
     else:
         return True
 
-
+#Updates the top k alignments based on a new alignment
 def updateTopAlignments(align):
     top_alignments.sort(key=lambda x: x.score)
     lowest_score = top_alignments[0].score
@@ -184,8 +180,7 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, G):
     for vi in corr:
         W = copy.copy(W_in)
         if vi not in W:
-            W.append(vi) 	# V0+ = Union of W and vi (that set of vertices)
-	# 		If the induced subgraph by adding vi to W is connected, and not already found (in T):
+            W.append(vi)
             subgraph = G0.subgraph(W)
             if nx.is_connected(subgraph) :
                 for vij in corr[vi]:
@@ -195,36 +190,25 @@ def GraphMatch(W_in, W_prime_in, corr, G_prime, G0, G):
                     for v in W_prime:
                         W_prime_str.append(v.stringifyVertex())
                     if isValidSolution(W, W_prime, G0, G_prime) and not T.hasPath(W_prime_str):
-                        alignment = ScoreAlignment(W, W_prime, G, G0)
+                        alignment = ScoreAlignment(W_prime, G, G0)
                         continue_search = updateTopAlignments(alignment)
                         if continue_search:
                             GraphMatch(W, W_prime, corr, G_prime, G0, G)
                     T.addPath(W_prime_str)
 
-#NOTES:
-#I'm having trouble with keeping track of the V0+ vertices in the tree.
-#I think I'm seeing that if I add W to the path of T, then a lot of the combinations wanted aren't being generated
-#Ie. If have vi = H, and adding S. Say both H and s have corresponding vertices: H:[a, b] and S:[c, d]
-# Then get GraphMatch([H,S], [a,c], ..) call
-# Eventually, that will return and add [H, S] to the Tree.
-# Then, GraphMatch([H,S], [a,d], ..) might be called, but then it would appear to have that path in T already, and
-# wouldn't go forward even though this could be a valid solution
-
-#For now, just adding the W_prime paths, since we know we don't want to look at multiple of those collections of vertices multiple times.
-
-def main():
-    # Reading in the arguments from the command line
-    parser = argparse.ArgumentParser(description='GraphMatch')
-    parser.add_argument('q', type=str, help='file name containing query graph')
-    parser.add_argument('i', type=str, help='file name containing reference graph')
-    parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
-    parser.add_argument('-m', type=int, help = 'Number of indels allowed in resulting subgraph [default=1]', default=1)
-    parser.add_argument('-ip', type=float, help='Indel Penalty [default=0.1]', default=-0.1)
-    parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=1]', default=-1)
-    parser.add_argument('-s', type=int, help='Match score form: 0-raw match score; 1- -log(match score) [default=1]', default=1)
-    parser.add_argument('-k', type=int, help='Number of top alignments to output [default=3]', default=3)
-    args = parser.parse_args()
-
+#Print the parameters selected by the user, and set up the specified parameters
+def command_setup(args):
+    print "Running GraphMatch...\n"
+    print "Parameters chosen: "
+    print "Query Graph: %s\nReference Graph: %s\nCorrespondences File: %s" % (args.q, args.i, args.c)
+    print "Number of indels allowed: %d\nIndel Penalty: %.2f\nNon-associated query vertex penalty: %.2f\nNumber of top results: %d" % (args.m, args.ip, args.np, args.k)
+    if args.s:
+        print "Scoring Method: negative log(E-value)"
+    else:
+        print "Scoring Method: Raw match score"
+        print "WARNING: due to scores being positive or negative for this approach, no branch and bound available."
+    print
+    #Setting up the parameters
     global m
     global indel_penalty
     global non_assoc_vertex_penalty
@@ -234,40 +218,32 @@ def main():
     indel_penalty = args.ip
     non_assoc_vertex_penalty = args.np
     score_method = args.s
-
     #Instantiate the top alignments with low scoring Alignments (So they will get replaced)
-    if score_method: #Using -log(E-value) as match score, so want to maximize this
-        score_placeholder = float("-inf")
-    else:
-        score_placeholder = float("inf")
     for i in range(0, args.k):
-        a = Alignment(score_placeholder, [], [])
+        a = Alignment(float("-inf"), [], [], [], [])
         top_alignments.append(a)
 
-
-    G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
-    G0_queryGraph = readGraph(args.q) #Node: String of query vertex name
-    global num_query_nodes
-    num_query_nodes = nx.number_of_nodes(G0_queryGraph)
-
-    corr = readCorrespondances(args.c) #Dictionary: key=query vertex name; value=list of Corr_Vertex
-    Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph) #Node: Stringified Corr_vertex (See class function)
-
-    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph, G_refGraph) #Apply Graph Match with empty sets at first
-
-    write_dot(G0_queryGraph, 'G0.dot')
-    write_dot(Gprime_graph, 'G_prime.dot')
-
+#Printing top alignment results
+def print_results(G_refGraph):
     result_count = 1
-    for align in top_alignments:
-        print "score: %f" % align.score
+    for align in sorted(top_alignments, key=lambda x: x.score, reverse=True):
+        print "Result %d - score: %f" % (result_count, align.score)
+        print
+        print "Matches: (query \ corresponding vertex)"
         list_nodes = []
         for w in align.correspVertices:
             print "%s \t %s" % (w.queryVertex, w.name)
             list_nodes.append(w.name)
-        print "Indels:"
+        print
+        print "Edges:"
+        for i in range(0, len(align.query_edges)):
+            print "%s\t--\t%s\t\t" % (align.query_edges[i][0], align.query_edges[i][1]),
+            for j in range(0, len(align.ref_edges[i]) - 1):
+                print "%s\t--\t" % align.ref_edges[i][j],
+            print align.ref_edges[i][len(align.ref_edges[i]) - 1]
+
+        #Adding indel vertices to a list for getting the G subgraph ready
         for i in align.indelVertices:
-            print i
             list_nodes.append(i)
         result = nx.subgraph(G_refGraph, list_nodes)
         for n in result.node:
@@ -278,6 +254,37 @@ def main():
         output_str = "result" + str(result_count) + ".dot"
         write_dot(result, output_str)
         result_count += 1
+        print
+
+
+def main():
+    # Reading in the arguments from the command line
+    parser = argparse.ArgumentParser(description='GraphMatch')
+    parser.add_argument('q', type=str, help='file name containing query graph')
+    parser.add_argument('i', type=str, help='file name containing reference graph')
+    parser.add_argument('c', type=str, help='file name containing correspondences between vertices')
+    parser.add_argument('-m', type=int, help = 'Number of indels allowed in resulting subgraph [default=1]', default=1)
+    parser.add_argument('-ip', type=float, help='Indel Penalty [default=0.1]', default=0.1)
+    parser.add_argument('-np', type=float, help='Penalty for query vertex being missing from resulting subgraph [default=1]', default=1)
+    parser.add_argument('-s', type=int, help='Match score form: 0-raw match score; 1- -log(match score) [default=1]', default=1)
+    parser.add_argument('-k', type=int, help='Number of top alignments to output [default=3]', default=3)
+    args = parser.parse_args()
+
+    command_setup(args)
+
+    #Reading in graphs and correspondences
+    G_refGraph = readGraph(args.i) #Node: String of corresponding vertex name
+    G0_queryGraph = readGraph(args.q) #Node: String of query vertex name
+    global num_query_nodes
+    num_query_nodes = nx.number_of_nodes(G0_queryGraph)
+    corr = readCorrespondances(args.c) #Dictionary: key=query vertex name; value=list of Corr_Vertex
+
+    #Making G' graph in preparation for GraphMatch recurrence
+    Gprime_graph = makeGraph_prime(corr, G0_queryGraph, G_refGraph) #Node: Stringified Corr_vertex
+
+    GraphMatch([], [], corr, Gprime_graph, G0_queryGraph, G_refGraph) #Apply Graph Match with empty sets at first
+
+    print_results(G_refGraph)
 
 
 if __name__ == '__main__':
