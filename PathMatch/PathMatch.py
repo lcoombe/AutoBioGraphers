@@ -127,38 +127,18 @@ def find_k_highest_scoring_paths(Gp):
             w = negated_node_weight + negated_edge_weight 
             Gpp.add_edge(e[0], e[1], weight=w)
 
-    print find_k_shortest_paths(Gpp, 3)
+    return find_k_shortest_paths(Gpp, 3)
 
 
-
-# !!!TODO!!!
-# Find k shortest, lowest weighted paths from source="start" to sink="end". There are negative edge weights.
-#def find_k_shortest_paths(Gpp, k):
-#
-#    def _get_weight(p):
-#        weight = 0
-#        for i in range(len(p)-1):
-#            #print best[i], best[i+1]
-#            #print Gpp[best[i]][best[i+1]]
-#            weight += Gpp[p[i]][p[i+1]]['weight']
-#        return weight
-#
-#    paths = nx.johnson(Gpp, 'weight')
-#    best = paths["start"]["end"]
-#
-#    #dist = nx.floyd_warshall(Gpp, weight='weight')
-#    #keys = dist.keys()
-#    #print dist["start"]["end"]
-#
-#    score = _get_weight(best)
-#    return [(best, score)]
 
 # Format results and write to outfile given k shortest paths
+# Results = [ (score, [('s', n1), (n1, n2), (n2, 't')])....]
 def format_result(path, G, results, outfile):
     for index, item in enumerate(results):
-        result, score = item
+        score, long_result = item
+        result = [x[0] for x in long_result[1:]]
         col1, col2, col3 = [], [], [] # Each col in outfile respectively 
-        result_q = [x[0] for x in result[1:-1]]
+        result_q = [x[0] for x in result]
 
         for q in path:
             col1.append(q)
@@ -167,19 +147,20 @@ def format_result(path, G, results, outfile):
                 col3.append("-")
             else: # Hit/match
                 col2.append("--")
-                entry = result[result_q.index(q)+1]
+                entry = result[result_q.index(q)]
                 assert(q == entry[0])
                 col3.append(entry[1])
 
                 # Insertions
-                next_entry = result[result_q.index(q)+2]
-                if next_entry != 'end':
+                if result_q.index(q)+1 < len(result):
+                    next_entry = result[result_q.index(q)+1]
                     # Find the shortest path d' in G from current entry to next entry
                     shortest_path = nx.shortest_path(G, entry[1], next_entry[1])
                     for a in shortest_path[1:-1]:
                         col1.append("-")
                         col2.append("")
                         col3.append(a)
+
         assert(len(col1)+len(col2)+len(col3) == len(col1)*3)
 
         if index == 0:
@@ -189,7 +170,7 @@ def format_result(path, G, results, outfile):
 
         # write results to outfile
         with open(outfile, typ) as f:
-            f.write("Result " + str(index) + ": score=" + str(score) + "\n")
+            f.write("Result " + str(index+1) + ": score=" + str(score) + "\n")
             rows = [[col1[i], col2[i], col3[i]] for i in range(len(col1))]
 
             widths = [max(map(len, col)) for col in zip(*rows)]
@@ -249,7 +230,7 @@ def main():
     results = find_k_highest_scoring_paths(Gp)
 
     # Format and write reslts to outfile
-    #format_result(path, G, results, args.output)
+    format_result(path, G, results, args.output)
 
 if __name__ == "__main__":
     main()
