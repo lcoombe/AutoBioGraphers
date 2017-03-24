@@ -224,7 +224,7 @@ def get_args():
     parser.add_argument("-g", type=int, help="maximum number of mismatches or indels between two matches, default=1")
     #parser.add_argument("-l", type=int, choices=[0, 1], help="type of match score: 0 -- use similarity score as match score, 1 -- use negative logarithm of similarity score as match score, default=1")
     #parser.add_argument("-s", type=int, choices=[0, 1], help="whether gaps are allowed at the start and the end of path alignment: 0 -- not allowed, i.e. must be matches at the start and end, 1 -- allowed, default=1")
-    parser.add_argument("-p", type=int, help="mismatch and indel penalty (>0), default=1")
+    parser.add_argument("-p", type=float, help="mismatch and indel penalty (>0), default=1")
     parser.add_argument("-n", type=int, help="number of output paths, default=1")
 
     args = parser.parse_args()
