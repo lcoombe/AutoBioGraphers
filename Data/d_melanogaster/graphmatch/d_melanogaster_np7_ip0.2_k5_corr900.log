@@ -1,0 +1,106 @@
+Running GraphMatch...
+
+Parameters chosen: 
+Query Graph: d_melanogaster/query
+Reference Graph: d_melanogaster/graph_input_900
+Correspondences File: d_melanogaster/pan_corr900.txt
+Number of indels allowed: 1
+Indel Penalty: 0.20
+Non-associated query vertex penalty: 7.00
+Number of top results: 5
+Scoring Method: negative log(E-value)
+
+Result 1 - score: 1584.663723
+
+Matches: (query \ corresponding vertex)
+Rac3 	 7227.FBpp0304252
+JNK 	 7227.FBpp0079676
+RalGDS 	 7227.FBpp0303219
+Ral 	 7227.FBpp0070558
+PLD1 	 7227.FBpp0112984
+RalBP1 	 7227.FBpp0083406
+Rac1 	 7227.FBpp0304252
+
+Edges:
+Rac3	--	JNK		7227.FBpp0304252	--	7227.FBpp0079676
+Rac3	--	RalGDS		7227.FBpp0304252	--	7227.FBpp0072746	--	7227.FBpp0303219
+PLD1	--	Ral		7227.FBpp0112984	--	7227.FBpp0070558
+RalBP1	--	Rac1		7227.FBpp0083406	--	7227.FBpp0304252
+RalBP1	--	Ral		7227.FBpp0083406	--	7227.FBpp0070558
+Ral	--	RalGDS		7227.FBpp0070558	--	7227.FBpp0303219
+
+Result 2 - score: 1582.466498
+
+Matches: (query \ corresponding vertex)
+Rac3 	 7227.FBpp0304252
+JNK 	 7227.FBpp0079676
+RalGDS 	 7227.FBpp0303219
+Ral 	 7227.FBpp0070558
+PLD1 	 7227.FBpp0112984
+RalBP1 	 7227.FBpp0083406
+Rac1 	 7227.FBpp0305023
+
+Edges:
+Rac3	--	JNK		7227.FBpp0304252	--	7227.FBpp0079676
+Rac3	--	RalGDS		7227.FBpp0304252	--	7227.FBpp0072746	--	7227.FBpp0303219
+PLD1	--	Ral		7227.FBpp0112984	--	7227.FBpp0070558
+RalBP1	--	Rac1		7227.FBpp0083406	--	7227.FBpp0305023
+RalBP1	--	Ral		7227.FBpp0083406	--	7227.FBpp0070558
+Ral	--	RalGDS		7227.FBpp0070558	--	7227.FBpp0303219
+
+Result 3 - score: 1578.672258
+
+Matches: (query \ corresponding vertex)
+Rac3 	 7227.FBpp0305023
+JNK 	 7227.FBpp0079676
+RalGDS 	 7227.FBpp0303219
+Ral 	 7227.FBpp0070558
+PLD1 	 7227.FBpp0112984
+RalBP1 	 7227.FBpp0083406
+Rac1 	 7227.FBpp0304252
+
+Edges:
+Rac3	--	JNK		7227.FBpp0305023	--	7227.FBpp0079676
+Rac3	--	RalGDS		7227.FBpp0305023	--	7227.FBpp0072746	--	7227.FBpp0303219
+PLD1	--	Ral		7227.FBpp0112984	--	7227.FBpp0070558
+RalBP1	--	Rac1		7227.FBpp0083406	--	7227.FBpp0304252
+RalBP1	--	Ral		7227.FBpp0083406	--	7227.FBpp0070558
+Ral	--	RalGDS		7227.FBpp0070558	--	7227.FBpp0303219
+
+Result 4 - score: 1576.475034
+
+Matches: (query \ corresponding vertex)
+Rac3 	 7227.FBpp0305023
+JNK 	 7227.FBpp0079676
+RalGDS 	 7227.FBpp0303219
+Ral 	 7227.FBpp0070558
+PLD1 	 7227.FBpp0112984
+RalBP1 	 7227.FBpp0083406
+Rac1 	 7227.FBpp0305023
+
+Edges:
+Rac3	--	JNK		7227.FBpp0305023	--	7227.FBpp0079676
+Rac3	--	RalGDS		7227.FBpp0305023	--	7227.FBpp0072746	--	7227.FBpp0303219
+PLD1	--	Ral		7227.FBpp0112984	--	7227.FBpp0070558
+RalBP1	--	Rac1		7227.FBpp0083406	--	7227.FBpp0305023
+RalBP1	--	Ral		7227.FBpp0083406	--	7227.FBpp0070558
+Ral	--	RalGDS		7227.FBpp0070558	--	7227.FBpp0303219
+
+Result 5 - score: 1535.616289
+
+Matches: (query \ corresponding vertex)
+Rac3 	 7227.FBpp0304252
+JNK 	 7227.FBpp0079676
+RalGDS 	 7227.FBpp0303219
+Ral 	 7227.FBpp0070558
+PLD1 	 7227.FBpp0112984
+RalBP1 	 7227.FBpp0083406
+Rac1 	 7227.FBpp0301153
+
+Edges:
+Rac3	--	JNK		7227.FBpp0304252	--	7227.FBpp0079676
+Rac3	--	RalGDS		7227.FBpp0304252	--	7227.FBpp0072746	--	7227.FBpp0303219
+PLD1	--	Ral		7227.FBpp0112984	--	7227.FBpp0070558
+RalBP1	--	Rac1		7227.FBpp0083406	--	7227.FBpp0301153
+RalBP1	--	Ral		7227.FBpp0083406	--	7227.FBpp0070558
+Ral	--	RalGDS		7227.FBpp0070558	--	7227.FBpp0303219

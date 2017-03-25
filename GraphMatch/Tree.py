@@ -1,7 +1,3 @@
-
-#NOTE: I know this code is super ugly -- so any suggestions about how to format it better are welcome :)
-
-
 #PURPOSE OF CLASS: representing all the already tested induced subgraphs of G0.
 # In the paper, a "*" is used to indicate the end of a path. For our purposes, then, a subgraph has already been tested if the path is in the graph,
 # and the last node in the path has a "*", indicating this path exactly had been added to the graph previously.
