@@ -3,6 +3,9 @@
 cat ../graphmatch/d_rerio/dr_protein.links.raw.txt |perl -ne 'chomp; @a=split(/\s+/); if($a[2]>700){print "$_\n";} ' > dr_protein.links_scoreOver700.txt 
 python ../graphmatch/filterSequences.py dr_protein.links_scoreOver700.txt ../graphmatch/d_rerio/dr_protein.sequences.raw.fa > dr_protein.sequences_scoreOver700.fa
 
+## Reformat into input graph file
+cat dr_protein.links_scoreOver700.txt |perl -ne 'chomp; @a=split(/\s+/); print "$a[0]\t$a[1]\n"; ' > graph_input_700
+
 ## Make BLAST DB on GSC server:
 /projects/rwarren_prj/solexa/HLAminer_dev/HLAminer_v1.3dev/bin/formatdb -p T -i dr_protein.sequences_scoreOver700.fa 
 
