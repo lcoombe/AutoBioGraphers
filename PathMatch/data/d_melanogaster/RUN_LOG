@@ -1,0 +1,27 @@
+RUN 1:
+Corr: > 700
+E-value: < 10^-5
+
+(445)Sarahs-MacBook-Air-2:PathMatch sarahyeo$ /usr/bin/time -l -p python PathMatch.py data/query data/d_melanogaster/graph_input700 data/d_melanogaster/dm_corr700.txt data/d_melanogaster/result
+Tue Mar 28 00:53:10 2017 started
+total_nodes 634 total_edges 47987
+Tue Mar 28 00:53:11 2017 reverse_pred, & dist by using bellman ford 
+Tue Mar 28 00:53:11 2017 all shortest paths completed
+Tue Mar 28 00:53:11 2017 Initialization has been done
+real       203.31
+user       194.11
+sys          2.62
+ 191684608  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     98030  page reclaims
+       479  page faults
+         0  swaps
+       159  block input operations
+         3  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+       196  voluntary context switches
+    266627  involuntary context switches

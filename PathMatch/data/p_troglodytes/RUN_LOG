@@ -1,0 +1,28 @@
+RUN 1:
+Corr: > 700
+E-value: < 10^-5
+
+(445)dhcp-128-189-221-145:PathMatch sarahyeo$ /usr/bin/time -p -l python PathMatch.py data/query data/p_troglodytes/graph_input700 data/p_troglodytes/pt_corr700.txt data/p_troglodytes/result 
+Tue Mar 28 20:20:17 2017 started
+total_nodes 965 total_edges 94533
+Tue Mar 28 20:20:19 2017 reverse_pred, & dist by using bellman ford 
+Tue Mar 28 20:20:19 2017 all shortest paths completed
+Tue Mar 28 20:20:19 2017 Initialization has been done
+real       556.10
+user       543.23
+sys          3.34
+ 241717248  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     83471  page reclaims
+       708  page faults
+         0  swaps
+       101  block input operations
+         2  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+       788  voluntary context switches
+    220412  involuntary context switches
+
