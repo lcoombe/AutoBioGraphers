@@ -1,0 +1,93 @@
+[lcoombe@hpce706 graphmatch]$ cat p_troglodytes_np7_ip0.2_k5_corr700.log 
+Running GraphMatch...
+
+Parameters chosen: 
+Query Graph: query
+Reference Graph: graph_input_700
+Correspondences File: pan_corr700.txt
+Number of indels allowed: 1
+Indel Penalty: 0.20
+Non-associated query vertex penalty: 7.00
+Number of top results: 3
+Scoring Method: negative log(E-value)
+
+Result 1 - score: 2536.062478
+
+Matches: (query \ corresponding vertex)
+Rac3 	 9598.ENSPTRP00000043196
+JNK 	 9598.ENSPTRP00000030121
+RalGDS 	 9598.ENSPTRP00000036808
+Ral 	 9598.ENSPTRP00000032640
+PLD1 	 9598.ENSPTRP00000042550
+RalBP1 	 9598.ENSPTRP00000049508
+Rac1 	 9598.ENSPTRP00000043196
+
+Edges:
+Rac3	--	JNK		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000030121
+Rac3	--	RalGDS		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000036808
+PLD1	--	Ral		9598.ENSPTRP00000042550	--	9598.ENSPTRP00000032640
+RalBP1	--	Rac1		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000043196
+RalBP1	--	Ral		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000032640
+Ral	--	RalGDS		9598.ENSPTRP00000032640	--	9598.ENSPTRP00000036808
+
+Result 2 - score: 2536.062478
+
+Matches: (query \ corresponding vertex)
+Rac3 	 9598.ENSPTRP00000043196
+JNK 	 9598.ENSPTRP00000027906
+RalGDS 	 9598.ENSPTRP00000036808
+Ral 	 9598.ENSPTRP00000032640
+PLD1 	 9598.ENSPTRP00000042550
+RalBP1 	 9598.ENSPTRP00000049508
+Rac1 	 9598.ENSPTRP00000043196
+
+Edges:
+Rac3	--	JNK		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000027906
+Rac3	--	RalGDS		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000036808
+PLD1	--	Ral		9598.ENSPTRP00000042550	--	9598.ENSPTRP00000032640
+RalBP1	--	Rac1		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000043196
+RalBP1	--	Ral		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000032640
+Ral	--	RalGDS		9598.ENSPTRP00000032640	--	9598.ENSPTRP00000036808
+
+Result 3 - score: 2536.062478
+
+Matches: (query \ corresponding vertex)
+Rac3 	 9598.ENSPTRP00000043196
+JNK 	 9598.ENSPTRP00000040692
+RalGDS 	 9598.ENSPTRP00000036808
+Ral 	 9598.ENSPTRP00000032640
+PLD1 	 9598.ENSPTRP00000042550
+RalBP1 	 9598.ENSPTRP00000049508
+Rac1 	 9598.ENSPTRP00000043196
+
+Edges:
+Rac3	--	JNK		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000040692
+Rac3	--	RalGDS		9598.ENSPTRP00000043196	--	9598.ENSPTRP00000036808
+PLD1	--	Ral		9598.ENSPTRP00000042550	--	9598.ENSPTRP00000032640
+RalBP1	--	Rac1		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000043196
+RalBP1	--	Ral		9598.ENSPTRP00000049508	--	9598.ENSPTRP00000032640
+Ral	--	RalGDS		9598.ENSPTRP00000032640	--	9598.ENSPTRP00000036808
+
+	Command being timed: "python ../../GraphMatch_curr.py -ip 0.2 -np 7 query graph_input_700 pan_corr700.txt"
+	User time (seconds): 68.48
+	System time (seconds): 0.97
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:09.83
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 331568
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 653297
+	Voluntary context switches: 1763
+	Involuntary context switches: 506
+	Swaps: 0
+	File system inputs: 24248
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
