@@ -17,3 +17,4 @@ cat blast_700.out|perl -ne 'chomp; @a=split(/\t/); if($a[10] < 0.00001){print "$
 
 ## Remove duplicates - keep the entry with lower e-value
 python ../remove_duplicates.py dm_corr700.txt > out && mv out dm_corr700.txt
+

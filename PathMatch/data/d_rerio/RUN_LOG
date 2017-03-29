@@ -1,0 +1,27 @@
+RUN 1:
+Corr: > 700
+E-value: < 10^-5
+
+(445)Sarahs-MacBook-Air-2:PathMatch sarahyeo$ /usr/bin/time -l -p python PathMatch.py data/query data/d_rerio/graph_input700 data/d_rerio/dr_corr700.txt data/d_rerio/result
+Tue Mar 28 01:11:24 2017 started
+total_nodes 1056 total_edges 88720
+Tue Mar 28 01:11:26 2017 reverse_pred, & dist by using bellman ford 
+Tue Mar 28 01:11:26 2017 all shortest paths completed
+Tue Mar 28 01:11:26 2017 Initialization has been done
+real       931.13
+user       922.66
+sys          6.42
+ 326406144  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+    108022  page reclaims
+       542  page faults
+         0  swaps
+       160  block input operations
+         2  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+       843  voluntary context switches
+    257484  involuntary context switches

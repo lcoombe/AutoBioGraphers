@@ -1,0 +1,28 @@
+RUN 1:
+Corr: > 700
+E-value: < 10^-5
+
+(445)dhcp-128-189-221-145:PathMatch sarahyeo$ /usr/bin/time -p -l python PathMatch.py data/query data/m_musculus/graph_input700 data/m_musculus/mm_corr700.txt data/m_musculus/result 
+Tue Mar 28 15:01:19 2017 started
+total_nodes 986 total_edges 90112
+Tue Mar 28 15:01:21 2017 reverse_pred, & dist by using bellman ford 
+Tue Mar 28 15:01:21 2017 all shortest paths completed
+Tue Mar 28 15:01:21 2017 Initialization has been done
+real       836.35
+user       818.05
+sys          9.16
+ 425787392  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+    136753  page reclaims
+         2  page faults
+         0  swaps
+         3  block input operations
+         3  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+        12  voluntary context switches
+    730792  involuntary context switches
+
