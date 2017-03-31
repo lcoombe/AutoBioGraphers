@@ -203,7 +203,7 @@ def format_result(path, G, results, outfile):
 
         # write results to outfile
         with open(outfile, typ) as f:
-            f.write("Result " + str(index+1) + ": score=" + str(score) + "\n")
+            f.write("Result " + str(index+1) + ": score=" + str(-1*score) + "\n")
             rows = [[new_col1[i], new_col2[i], new_col3[i]] for i in range(len(new_col1))]
 
             widths = [max(map(len, col)) for col in zip(*rows)]
