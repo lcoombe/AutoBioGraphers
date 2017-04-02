@@ -25,3 +25,37 @@ sys          6.42
          0  signals received
        843  voluntary context switches
     257484  involuntary context switches
+
+RUN 2:
+Corr: > 700
+E-value: < 10^-5
+
+(python2) [syeo@hpce706 PathMatch]$ /usr/bin/time -v python PathMatch.py ../Data/pathmatch_query ../Data/d_rerio/pathmatch/graph_input700 ../Data/d_rerio/pathmatch/dr_corr700.txt  ../Data/d_rerio/pathmatch/result2 -p 57.5                                   
+Sun Apr  2 15:51:24 2017 started
+total_nodes 1056 total_edges 88720
+Sun Apr  2 15:51:25 2017 reverse_pred, & dist by using bellman ford 
+Sun Apr  2 15:51:25 2017 all shortest paths completed
+Sun Apr  2 15:51:25 2017 Initialization has been done
+        Command being timed: "python PathMatch.py ../Data/pathmatch_query ../Data/d_rerio/pathmatch/graph_input700 ../Data/d_rerio/pathmatch/dr_corr700.txt ../Data/d_rerio/pathmatch/result2 -p 57.5"
+        User time (seconds): 612.26
+        System time (seconds): 0.50
+        Percent of CPU this job got: 100%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 10:12.43
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 328400
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 436842
+        Voluntary context switches: 1757
+        Involuntary context switches: 1622
+        Swaps: 0
+        File system inputs: 53504
+        File system outputs: 24
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 0
