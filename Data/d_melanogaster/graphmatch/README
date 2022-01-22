@@ -1,5 +1,0 @@
-Runs of graphmatch for d_melanogaster:
-
-March 25:
-[lcoombe@hpce706 graphmatch]$ /usr/bin/time -pv python GraphMatch.py -np 7 -ip 0.2 -k 5 d_melanogaster/query d_melanogaster/graph_input_900 d_melanogaster/pan_corr900.txt > d_melanogaster/d_melanogaster_np7_ip0.2_k5_corr900.log
-
